@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login to Dashboard | KabarakB2B</title>
+    <link rel="stylesheet" href="Login.css" />
+    <link rel="shortcut icon" href="#" type="image/x-icon">
+</head>
+
+<body>
+    <section>
+        <div class="login-box">
+            <form action="./login.php" method="post" enctype="multipart/form-data" id="loginform">
+                <h1>KabarakB2B</h1>
+                <h2>Login</h2>
+                <div class="input-box">
+                    <span class="icon">
+                        <ion-icon name="call"></ion-icon>
+                    </span>
+                    <input type="tel" name="telephone" id="telephone" required autofocus  maxlength="15"/>
+                    <label for="telephone">Telephone</label>             </div>
+                <div class="input-box">
+                    <span class="icon">
+                        <ion-icon name="lock-closed"></ion-icon>
+                    </span>
+                    <input type="password" name="Passphrase" id="Passphrase" required minlength="8" maxlength="15"/>
+                    <label for="Passphrase">Password</label>
+                </div>
+                <div class="show-hide">
+                    <label for="Show-hide-pass"><input type="checkbox" name="Show-hide-pass" id="Show-hide-pass" value="show" onclick="showPassword()"/> Show Password</label>
+                </div>
+                <div class="remember-forgot">
+                    <label for="Remember"><input type="checkbox" name="Remember" id="Remember" value="1"/> Remember
+                        me</label>
+                    <a href="./resetPassword.php">Forgort Password</a>
+                </div>
+                <button type="submit" name="login">Login</button>
+                <div class="register-link">
+                    <p>Don't have an account? <a href="./signup.php">Register</a></p>
+                </div>
+            </form>
+        </div>
+    </section>
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+    <script>
+        //showing and hiding the password
+        function showPassword() {
+            var passwordInput = document.getElementById('Passphrase');
+            var showHide = document.getElementById('Show-hide-pass').value;
+
+            if (showHide === 'show' && passwordInput.type === 'password') {
+                passwordInput.type = "text";
+            } else {
+                passwordInput.type = "password";
+            }
+        }
+        document.addEventListener('DOMContentLoaded', function () {
+        // Get the form and all input elements
+        const form = document.getElementById('loginform'); 
+        const inputs = form.querySelectorAll('input');
+
+        // Add 'keydown' event listener to the form
+        form.addEventListener('keydown', function (event) {
+            // Check if the pressed key is Enter (key code 13)
+            if (event.key === 'Enter') {
+                event.preventDefault(); // Prevent the default behavior (e.g., form submission)
+
+                // Find the currently focused input
+                const focusedInput = document.activeElement;
+
+                // If the focused input is the last one, submit the form
+                if (focusedInput === inputs[inputs.length - 1]) {
+                    form.submit();
+                } else {
+                    // If not the last input, find the next input and focus on it
+                    const nextIndex = Array.from(inputs).indexOf(focusedInput) + 1;
+                    inputs[nextIndex].focus();
+                }
+            }
+        });
+    });
+    </script>
+</body>
+
+</html>
