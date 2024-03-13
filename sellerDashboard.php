@@ -2,13 +2,14 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-ob_start(); //buffering - stores the details on temporary memories
 
 session_start();
 
 include_once 'connect.php';
 
 $telephone = $_SESSION['user'];
+
+$operator = "seller";
 
 $query = "SELECT SellerID , SellerFirstName, SellerLastName, Email FROM Sellers WHERE Telephone = '$telephone';";
 $sql = mysqli_query($conn, $query);
@@ -21,17 +22,8 @@ while ($row = mysqli_fetch_assoc($sql)) {
 }
 
 
-//Select Number of views
-
-$query = "SELECT COUNT(SellerID) AS TotalSellers FROM Sellers;";
-$sql = mysqli_query($conn, $query);
-
-if ($row = mysqli_fetch_array($sql)) {
-    $number_of_sellers = $row['TotalSellers'];
-}
-
 //select Number of Products
-$query = "SELECT COUNT(ProductID) AS TotalProducts FROM sellerProducts WHERE sellerProducts.SellerID = Sellers.SellerID AND sellerProducts.ProductID = Products.ProductID AND SellerID = '$seller_id';";
+$query = "SELECT COUNT(ProductID) AS TotalProducts FROM sellerProducts WHERE SellerID = '$seller_id';";
 
 $sql = mysqli_query($conn, $query);
 
@@ -40,7 +32,7 @@ if ($row = mysqli_fetch_array($sql)) {
 }
 
 //select Number of Services
-$query = "SELECT COUNT(ServiceID) AS TotalServices FROM sellerServices  WHERE sellerServices.SellerID = Sellers.SellerID AND sellerServices.ServiceID = Services.ServiceID AND SellerID = '$seller_id';";
+$query = "SELECT COUNT(ServiceID) AS TotalServices FROM sellerServices  WHERE  SellerID = '$seller_id';";
 
 $sql = mysqli_query($conn, $query);
 
@@ -48,8 +40,8 @@ if ($row = mysqli_fetch_array($sql)) {
     $number_of_services = $row['TotalServices'];
 }
 
-
-
+$_SESSION['user'] = $telephone;
+$_SESSION['operator'] = $operator;
 ?>
 
 <!DOCTYPE html>
@@ -58,10 +50,13 @@ if ($row = mysqli_fetch_array($sql)) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KabarakB2B | Admin Dashboard</title>
+    <title>KabarakB2B | Seller Dashboard</title>
 
     <!--Global Styles of the page-->
     <link rel="stylesheet" href="style.css">
+
+    <!--Responsiveness of the page-->
+    <link rel="stylesheet" href="responsiveness.css">
 
     <!--==Icons on the page==-->
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.min.css" rel="stylesheet">
@@ -85,6 +80,10 @@ if ($row = mysqli_fetch_array($sql)) {
             height: 60px;
         }
 
+        .menu-open-btn {
+            display: none;
+        }
+
         .sidebar {
             top: 5%;
             width: 15%;
@@ -103,6 +102,10 @@ if ($row = mysqli_fetch_array($sql)) {
             width: calc(100% - 15%);
             padding: 1.6rem;
             transition: margin-left 0.3s;
+        }
+
+        .sidebar-close-btn {
+            display: none;
         }
 
         .sidebar-list {
@@ -131,7 +134,23 @@ if ($row = mysqli_fetch_array($sql)) {
             width: 0%;
             /* Adjust the width as needed */
         }
+        .buttons{
+                top: 0;
+                font-size: 1em;
+                left: 0;
+                border: none;
+                width: 2rem;
+                height: 2rem;
+                background: transparent;
+                margin-right: 1rem;
+            }
+            .menu-open-btn {
+                display: none;
+            }
 
+            .sidebar-close-btn {
+                display: none;
+            }
         .content.expanded {
             margin-left: 0%;
             /* Adjust the margin-left as needed */
@@ -155,6 +174,7 @@ if ($row = mysqli_fetch_array($sql)) {
             display: flex;
             align-items: flex-start;
             margin: 60px 0 30px 0;
+            text-transform: capitalize;
         }
 
         .welcome-message .title {
@@ -162,7 +182,7 @@ if ($row = mysqli_fetch_array($sql)) {
         }
 
         .dashboard-content-container {
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             gap: var(--gap);
         }
 
@@ -198,7 +218,7 @@ if ($row = mysqli_fetch_array($sql)) {
             background-color: var(--box3-color);
         }
 
-        .tables-container{
+        .tables-container {
             margin-top: 6rem;
             display: flex;
             justify-content: center;
@@ -210,10 +230,13 @@ if ($row = mysqli_fetch_array($sql)) {
             margin-top: 3rem;
             border-collapse: collapse;
             width: 100%;
+            max-width: 100%;
         }
-        #sellers{
+
+        #sellers {
             margin-top: 0;
         }
+
         #sellers thead {
             background-color: var(--box1-color);
         }
@@ -235,17 +258,185 @@ if ($row = mysqli_fetch_array($sql)) {
         #services thead {
             background-color: var(--box3-color);
         }
+
+        @media screen and (max-width: 1100px) {
+            body {
+                padding: 0;
+                margin: 0;
+                box-sizing: border-box;
+            }
+            .logo-items{
+                display: flex;
+                flex-direction: row;
+                gap: var(--gap);
+            }
+            .sidebar {
+                top: 10%;
+                width: 40%;
+                height: 90vh;
+                background: var(--secondary-background);
+                position: fixed;
+                left: 0;
+                display: none;
+                overflow-x: hidden;
+                padding-top: 1rem;
+                overflow-y: scroll;
+                z-index: 1000;
+            }
+
+            .content {
+                margin-top: 0;
+                margin-left: 0;
+                width: 100%;
+                padding: 0;
+                transition: none;
+            }
+
+            .tables-container {
+
+                width: 100%;
+            }
+
+            table {
+                max-width: 100%;
+            }
+
+            .sidebar-open-btn {
+                display: none;
+            }
+            .menu-open-btn {
+                display: block;
+            }
+
+            .sidebar-close-btn {
+                display: block;
+                right: 0;
+                top: 0;
+            }
+
+            .sidebar-list .menu-item {
+                gap: .5rem;
+                font-size: var(--font-size-sm);
+            }
+        }
+
+        @media screen and (max-width: 950px) {
+            .dashboard {
+                margin: auto;
+
+            }
+
+            .tables-container {
+                width: 100%;
+                margin: 3rem 0;
+                padding: 0;
+            }
+
+            table {
+                width: 100%;
+                table-layout: fixed;
+                /* Fix the table layout */
+            }
+
+            th,
+            td {
+                word-wrap: break-word;
+                white-space: wrap;
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            .dashboard-content-container {
+                grid-template-columns: repeat(2, 1fr);
+                gap: var(--gap-vxsm);
+            }
+
+            th {
+                font-size: var(--font-size-small);
+                padding: .25rem .5rem;
+            }
+
+            td {
+                font-size: var(--font-size-xsmall);
+                padding: .1rem .75rem;
+            }
+            .popup {
+            top: 0;
+            left: 0;
+            margin: 25% 10% ;
+            width: 80%;
+        }
+        .header{
+                height: 30px;
+            }
+        .sidebar {
+                top: 8%;
+                
+            }
+        }
+
+        @media screen and (max-width: 615px) {
+            .header {
+                height: 4rem;
+            }
+
+            .welcome-message {
+                margin: 30px 0 15px 0;
+            }
+
+            .welcome-message .title {
+                font-size: var(--font-size-m);
+            }
+
+            .box .text {
+                font-size: 16px;
+            }
+
+            .box .number {
+                font-size: 30px;
+            }
+
+            .tables-container {
+                margin-top: 3rem;
+                max-width: 100%;
+            }
+
+            table {
+                margin-top: 1.5rem;
+                width: 100%;
+                max-width: 100%;
+            }
+
+        }
+
+        @media screen and (max-width: 525px) {
+            .dashboard-content-container {
+                grid-template-columns: repeat(1, 1fr);
+                gap: var(--gap);
+            }
+
+            th {
+                font-size: var(--font-size-xsmall);
+                padding: .1rem 0;
+            }
+
+            td {
+                font-size: 10px;
+                padding: .05rem 0;
+            }
+        }
     </style>
 </head>
 
 <body>
     <header class="header" id="header">
-        <div class="logo-items">
-            <button class="sidebar-open-btn" onclick="toggleSidebar()">
-                <i class="ri-menu-3-line"></i>
+    <div class="logo-items">
+            <button class="buttons">
+                <i class="ri-menu-3-line sidebar-open-btn" onclick="toggleSidebar()"></i>
+                <i class="ri-menu-3-line menu-open-btn" onclick="showSideBar()"></i>
             </button>
             <div class="logo">
-                <a href="./sellerDashboard.php" class="link">
+                <a href="<?php echo './'.$operator.'Dashboard.php'?>" class="link">
                     <h3 class="logo-name">Kabarak<span class="tm">B2B</span></h3>
                 </a>
             </div>
@@ -253,9 +444,12 @@ if ($row = mysqli_fetch_array($sql)) {
     </header>
 
     <div id="sidebar" class="sidebar">
+        <button class="sidebar-close-btn" id="menu-close-btn" onclick="hideSideBar()">
+            <i class="ri-close-line"></i>
+        </button>
         <ul class="list sidebar-list">
             <li class="menu-item first-item">
-                <a href="./sellerDashboard.php" class="link"><i class="#"></i>Site Home</a>
+                <a href="<?php echo './'.$operator.'Dashboard.php'?>" class="link"><i class="#"></i>Site Home</a>
             </li>
             <li class="menu-item">
                 <a href="./my_profile.php" class="link"><i class="#"></i>My Profile</a>
@@ -264,19 +458,10 @@ if ($row = mysqli_fetch_array($sql)) {
                 <a href="./setPassword.php" class="link"><i class="#"></i>Update Password</a>
             </li>
             <li class="menu-item">
-                <a href="./updateProfile.php" class="link"><i class="#"></i>Update My Contacts</a>
+                <a href="#" class="link"><i class="#"></i>Update My Contacts</a>
             </li>
             <li class="menu-item">
-                <a href="./uploadProduct.php" class="link"><i class="#"></i>Change Business Name</a>
-            </li>
-            <li class="menu-item">
-                <a href="./uploadService.php" class="link"><i class="#"></i>Upload Service</a>
-            </li>
-            <li class="menu-item">
-                <a href="./deleteProduct.php" class="link"><i class="#"></i>Delete Items</a>
-            </li>
-            <li class="menu-item">
-                <a href="./deleteUser.php" class="link"><i class="#"></i>Delete User</a>
+                <a href="#" class="link"><i class="#"></i>Change Business Name</a>
             </li>
             <li class="menu-item last-item">
                 <a href="./logout.php" class="link"><i class="#"></i>Logout</a>
@@ -288,16 +473,12 @@ if ($row = mysqli_fetch_array($sql)) {
 
         <section class="section dashboard">
             <div class="welcome-message">
-                <h4 class="title">Hello <?php echo $first_name. " ". $last_name; ?>, Welcome to Kabarak<span class="tm">B2B</span> Seller's Dashboard. </h4>
+                <h4 class="title">Hello <?php echo $last_name; ?>, Welcome to Kabarak<span class="tm">B2B</span> Seller's Dashboard. </h4>
             </div>
 
             <div class="dashboard-content-container container d-grid" id="dashboard-content-container">
-                <div class="box box1">
-                    <span class="text">Total Reach </span>
-                    <span class="number"> <?php echo $number_of_sellers; ?> </span>
-                </div>
 
-                <div class="box box2">
+                <div class="box box1">
                     <span class="text">My Total Products Online</span>
                     <span class="number"> <?php echo $number_of_products; ?> </span>
                 </div>
@@ -396,7 +577,7 @@ if ($row = mysqli_fetch_array($sql)) {
             <div class="footer-container container d-grid">
                 <div class="org-data">
                     <div class="logo">
-                        <a href="./sellerDashboard.php" class="link">
+                        <a href="<?php echo './'.$operator.'Dashboard.php'?>" class="link">
                             <h3 class="logo-name">Kabarak<span class="tm">B2B</span></h3>
                         </a>
                     </div>
@@ -449,6 +630,7 @@ if ($row = mysqli_fetch_array($sql)) {
         </footer>
     </div>
 </body>
+<script src="./index.js"></script>
 <script>
     function toggleSidebar() {
         const sidebar = document.getElementById('sidebar');

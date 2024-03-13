@@ -12,6 +12,7 @@ if (isset($_POST['submit_item'])) {
     $price = $_POST["price"];
     $image = $_FILES["service-image"];
     $telephone = $_POST['seller'];
+    $description = $_POST['description'];
 
     $telephone = (substr($telephone, 0, 1) == "0") ? preg_replace("/^0/", "+254", $telephone) : $telephone;
     $telephone = (substr($telephone, 0, 1) == "7") ? "+254{$telephone}" : $telephone;
@@ -28,7 +29,7 @@ if (isset($_POST['submit_item'])) {
         if (move_uploaded_file($image["tmp_name"], $target_file)) {
             $image_path = $target_file;
     
-            $sql = "INSERT INTO Services (ServiceType, Price, image_path) VALUES ('$service_name', '$price', '$image_path')";
+            $sql = "INSERT INTO Services (ServiceType, Price,ServiceDescription, image_path) VALUES ('$service_name', '$price', '$description' ,'$image_path')";
     
             if ($conn->query($sql) === true) {
                 // Retrieve the ServiceID for the inserted service
@@ -86,6 +87,9 @@ ob_end_flush();
     <!--Global Styles of the page-->
     <link rel="stylesheet" href="style.css">
 
+    <!--Responsiveness of the page-->
+    <link rel="stylesheet" href="responsiveness.css">
+
     <!--==Icons on the page==-->
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha384-mQ93GR66B00ZXjt0YO5KlohRA5SY1TAhP5u1bZLrB2JTXQqjE1t1S5PBLmiBbfaD" crossorigin="anonymous">
@@ -121,7 +125,22 @@ ob_end_flush();
             padding-top: 20px;
             overflow-y: scroll;
         }
-
+        .buttons{
+                top: 0;
+                font-size: 1em;
+                left: 0;
+                border: none;
+                width: 2rem;
+                height: 2rem;
+                background: transparent;
+                margin-right: 1rem;
+            }
+            .menu-open-btn{
+                display: none;
+            }
+            .sidebar-close-btn{
+                display: none;
+            }
         .content {
             margin-top: 0;
             margin-left: 15%;
@@ -274,14 +293,100 @@ ob_end_flush();
             margin: auto 20%;
             font-weight: 600;
         }
+        @media screen and (max-width: 1100px) {
+            body {
+                padding: 0;
+                margin: 0;
+                box-sizing: border-box;
+            }
+            .logo-items{
+                display: flex;
+                flex-direction: row;
+                gap: var(--gap);
+            }
+            .sidebar {
+                top: 10%;
+                width: 40%;
+                height: 90vh;
+                background: var(--secondary-background);
+                position: fixed;
+                left: 0;
+                display: none;
+                overflow-x: hidden;
+                padding-top: 1rem;
+                overflow-y: scroll;
+                z-index: 1000;
+            }
+
+            .content {
+                margin-top: 0;
+                margin-left: 0;
+                width: 100%;
+                padding: 0;
+                transition: none;
+            }
+            
+
+            .sidebar-open-btn {
+                display: none;
+            }
+            .menu-open-btn {
+                display: block;
+            }
+
+            .sidebar-close-btn {
+                display: block;
+                right: 0;
+                top: 0;
+            }
+
+            .sidebar-list .menu-item {
+                gap: .5rem;
+                font-size: var(--font-size-sm);
+            }
+        }
+
+        @media screen and (max-width: 950px) {
+            .dashboard {
+                margin: auto;
+
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            .popup {
+            top: 0;
+            left: 0;
+            margin: 25% 10% ;
+            width: 80%;
+        }
+        }
+
+        @media screen and (max-width: 615px) {
+            .header {
+                height: 4rem;
+            }
+
+
+        }
+
+        @media screen and (max-width: 525px) {
+            .myform {
+            padding-block: 2rem;
+            border-radius: 20px;
+            padding-bottom: 3rem;
+            width: 100%;
+        }
+        }
     </style>
 </head>
 
 <body>
     <header class="header" id="header">
-        <div class="logo-items">
-            <button class="sidebar-open-btn" onclick="toggleSidebar()">
-                <i class="ri-menu-3-line"></i>
+    <div class="logo-items">
+            <button class="buttons">
+                <i class="ri-menu-3-line sidebar-open-btn" onclick="toggleSidebar()"></i>
+                <i class="ri-menu-3-line menu-open-btn" onclick="showSideBar()"></i>
             </button>
             <div class="logo">
                 <a href="./adminDashboard.php" class="link">
@@ -292,6 +397,9 @@ ob_end_flush();
     </header>
 
     <div id="sidebar" class="sidebar">
+        <button class="sidebar-close-btn" id="menu-close-btn" onclick="hideSideBar()">
+            <i class="ri-close-line"></i>
+        </button>
         <ul class="list sidebar-list">
             <li class="menu-item first-item">
                 <a href="./adminDashboard.php" class="link"><i class="#"></i>Site Home</a>
@@ -351,18 +459,32 @@ ob_end_flush();
 
                         <div class="inputs">
                             <label for="price">Price:</label><br>
-                            <input type="number" name="price" required class="myform-input" min="1">
+                            <input type="number" name="price" class="myform-input" min="1">
                         </div>
-
                         <div class="inputs">
-                            <label for="image">Image of Service:</label>
+                            <label for="description">Service Description:</label>
+                            <input type="text" name="description" class="myform-input">
+                        </div>
+                        <div class="inputs">
+                            <label for="service-image">Image of Service:</label>
                             <input type="file" name="service-image" accept="image/*" required>
                         </div>
                         <div class="inputs">
-                            <label for="seller">Seller's Telephone:</label>
-                            <input type="tel" name="seller" class="myform-input">
+                            <label for="seller">Seller's Business Name:</label>
+                            <select name="seller" class="myform-input select" required>
+                        <?php
+                            $query = "SELECT BusinessName,Telephone FROM Sellers;";
+                            $sql = mysqli_query($conn, $query);
+                            while($row = mysqli_fetch_assoc($sql)){
+                        ?>
+                            <option value="<?php echo $row['Telephone'];?>"><?php echo $row['BusinessName'];?></option>
+                        <?php
+                            }
+                        ?>
+                        </select>
                         </div>
-                        <button class="form-btn" type="submit" name="submit_item">Submit Item</button>
+                        
+                        <button class="form-btn" type="submit" name="submit_item">Upload</button>
                     </form>
                 </div>
             </div>

@@ -2,12 +2,13 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-ob_start();
 session_start();
 
 include_once 'connect.php';
 
 $telephone = $_SESSION['user'];
+
+$operator = $_SESSION['operator'];
 
 //select all users from the database
 $query = "SELECT Telephone FROM MySecurity;";
@@ -25,7 +26,7 @@ while ($row = mysqli_fetch_assoc($result)) {
     $existingAdminsTelephones[] = $row['Telephone'];
 }
 
-if(isset($_POST['save-admin'])){
+if (isset($_POST['save-admin'])) {
     $adminID = $_POST['admin-id'];
     $telephone = $_POST['telephone'];
     $email = $_POST['email'];
@@ -44,15 +45,14 @@ if(isset($_POST['save-admin'])){
 
         $message = " Information Successfully Updated";
         $popupClass = "success-popup";
-        
+        $_SESSION['user'] = $telephone;
     } else {
         $message = "Error updating Information" . mysqli_error($conn);
         $popupClass = "error-popup";
     }
-
 }
-if(isset($_POST['save-seller'])){
-    
+if (isset($_POST['save-seller'])) {
+
     $sellerID = $_POST['seller-id'];
     $telephone = $_POST['telephone'];
     $email = $_POST['email'];
@@ -73,7 +73,7 @@ if(isset($_POST['save-seller'])){
     if ($sql) {
         $message = " Information Successfully Updated";
         $popupClass = "success-popup";
-        
+        $_SESSION['user'] = $telephone;
     } else {
 
         $message = "Error updating Information" . mysqli_error($conn);
@@ -91,8 +91,7 @@ if(isset($_POST['save-seller'])){
     <title>KabarakB2B | Upload Products & Services</title>
 
     <!--Global Styles of the page-->
-    <link rel="stylesheet" href="style.css">
-
+    <link rel="stylesheet" href="./style.css">
     <!--==Icons on the page==-->
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha384-mQ93GR66B00ZXjt0YO5KlohRA5SY1TAhP5u1bZLrB2JTXQqjE1t1S5PBLmiBbfaD" crossorigin="anonymous">
@@ -113,8 +112,8 @@ if(isset($_POST['save-seller'])){
             height: 60px;
         }
 
-        .sidebar-open-btn {
-            color: var(--dark-color);
+        .menu-open-btn {
+            display: none;
         }
 
         .sidebar {
@@ -135,6 +134,10 @@ if(isset($_POST['save-seller'])){
             width: calc(100% - 15%);
             padding: 1.6rem;
             transition: margin-left 0.3s;
+        }
+
+        .sidebar-close-btn {
+            display: none;
         }
 
         .sidebar-list {
@@ -175,16 +178,25 @@ if(isset($_POST['save-seller'])){
             transition: all 0.3s ease;
         }
 
+        .logo_items .menu-toggle-btn {
+            background-color: #fff;
+        }
+
         .link {
             font-weight: 500;
         }
 
-
-        button {
-            padding: .5rem 1rem;
-            background: red;
-            color: var(--light-color);
+        .buttons {
+            top: 0;
+            font-size: 1em;
+            left: 0;
+            border: none;
+            width: 2rem;
+            height: 2rem;
+            background: transparent;
+            margin-right: 1rem;
         }
+
 
         .success-popup {
             background-color: #4DA3FF;
@@ -275,12 +287,12 @@ if(isset($_POST['save-seller'])){
             text-align: center;
             margin-top: 1.5rem;
         }
-
         .basic-info-container {
             grid-template-columns: repeat(2, 1fr);
             gap: var(--gap);
         }
 
+        .seller-info-container .inputs,
         .basic-info-container .inputs {
             transition: var(--tran-05);
             background-color: var(--box1-color);
@@ -292,7 +304,7 @@ if(isset($_POST['save-seller'])){
             gap: var(--gap);
 
         }
-
+        .seller-contact-info-container .inputs,
         .contact-info-container .inputs {
             transition: var(--tran-05);
             background-color: var(--box2-color);
@@ -310,12 +322,12 @@ if(isset($_POST['save-seller'])){
             border-radius: 12px;
         }
 
-        .sellers .basic-info-container {
+        .seller-info-container {
             grid-template-columns: repeat(3, 1fr);
             gap: var(--gap);
         }
 
-        .sellers .contact-info-container {
+        .seller-contact-info-container {
             grid-template-columns: repeat(3, 1fr);
             gap: var(--gap);
 
@@ -330,7 +342,7 @@ if(isset($_POST['save-seller'])){
             background-color: transparent;
             color: var(--dark-color);
             border: 2px solid var(--dark-color);
-            padding-block: .5rem ;
+            padding-block: .5rem;
             text-align: start;
             padding-left: 1rem;
             letter-spacing: .75rem;
@@ -346,6 +358,7 @@ if(isset($_POST['save-seller'])){
             color: red;
             font-size: var(--font-size-sm);
         }
+
         .save-btn {
             margin-top: 1rem;
             padding: .5rem 2rem;
@@ -354,17 +367,175 @@ if(isset($_POST['save-seller'])){
             border: 2px solid #b94343;
             cursor: pointer;
         }
+
+        .profile-photo-container{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem 1.2rem;
+            row-gap: 5rem;
+            position: relative;
+        }
+        .profile-photo{
+            position: relative;
+            height: 15rem;
+            width: 15rem;
+            border-radius: 50%;
+            background: #fff;
+            align-content: center;
+            padding: 0.3rem;
+        }
+        .profile-photo .profile-image{
+            height: 100%;
+            width: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 0.4rem solid #4070F4;
+        }
+        @media screen and (max-width: 1100px) {
+            body {
+                padding: 0;
+                margin: 0;
+                box-sizing: border-box;
+            }
+
+            .logo-items {
+                display: flex;
+                flex-direction: row;
+                gap: var(--gap);
+            }
+
+            .sidebar {
+                top: 10%;
+                width: 40%;
+                height: 90vh;
+                background: var(--secondary-background);
+                position: fixed;
+                left: 0;
+                display: none;
+                overflow-x: hidden;
+                padding-top: 1rem;
+                overflow-y: scroll;
+                z-index: 1000;
+            }
+
+            .content {
+                margin-top: 0;
+                margin-left: 0;
+                width: 100%;
+                padding: 0;
+                transition: none;
+            }
+
+            .sidebar-open-btn {
+                display: none;
+            }
+
+            .menu-open-btn {
+                display: block;
+            }
+
+            .sidebar-close-btn {
+                display: block;
+                right: 0;
+                top: 0;
+            }
+
+            .sidebar-list .menu-item {
+                gap: .5rem;
+                font-size: var(--font-size-sm);
+            }
+        }
+
+        @media screen and (max-width: 975px) {
+
+            .seller-info-container,
+            .seller-contact-info-container {
+                grid-template-columns: repeat(3, 1fr);
+                gap: var(--gap-md);
+            }
+            .basic-info-container {
+                grid-template-columns: repeat(3, 1fr);
+                gap: var(--gap);
+            }
+        }
+
+        @media screen and (max-width: 850px) {
+
+            .seller-info-container,
+            .seller-contact-info-container,
+            .business-info-container{
+                grid-template-columns: repeat(2, 1fr);
+                gap: var(--gap-md);
+            }
+            .basic-info-container,
+            .contact-info-container {
+                grid-template-columns: repeat(2, 1fr);
+                gap: var(--gap);
+            }
+        }
+
+
+
+        @media screen and (max-width: 768px) {
+
+            .business-info-container {
+                gap: var(--gap-sm);
+            }
+            .popup {
+            top: 0;
+            left: 0;
+            margin: 25% 10% ;
+            width: 80%;
+        }
+        .sidebar {
+                top: 5%;
+                
+            }
+        }
+
+        @media screen and (max-width: 615px) {
+
+            .header {
+                height: 3rem;
+            }
+
+            .box .text {
+                font-size: 16px;
+            }
+
+            .box .number {
+                font-size: 30px;
+            }
+
+        }
+
+        @media screen and (max-width: 525px) {
+            .seller-info-container,
+            .seller-contact-info-container,
+            .business-info-container{
+                grid-template-columns: repeat(1, 1fr);
+                gap: var(--gap);
+            }
+            .basic-info-container,
+            .contact-info-container {
+                grid-template-columns: repeat(1, 1fr);
+                gap: var(--gap);
+            }
+        }
     </style>
 </head>
 
 <body>
     <header class="header" id="header">
         <div class="logo-items">
-            <button class="sidebar-open-btn" onclick="toggleSidebar()">
-                <i class="ri-menu-3-line"></i>
+            <button class="buttons">
+                <i class="ri-menu-3-line sidebar-open-btn" onclick="toggleSidebar()"></i>
+                <i class="ri-menu-3-line menu-open-btn" onclick="showSideBar()"></i>
             </button>
             <div class="logo">
-                <a href="./adminDashboard.php" class="link">
+                <a href="<?php echo './'.$operator.'Dashboard.php'?>" class="link">
                     <h3 class="logo-name">Kabarak<span class="tm">B2B</span></h3>
                 </a>
             </div>
@@ -372,30 +543,15 @@ if(isset($_POST['save-seller'])){
     </header>
 
     <div id="sidebar" class="sidebar">
+        <button class="sidebar-close-btn" id="menu-close-btn" onclick="hideSideBar()">
+            <i class="ri-close-line"></i>
+        </button>
         <ul class="list sidebar-list">
             <li class="menu-item first-item">
-                <a href="./adminDashboard.php" class="link"><i class="#"></i>Site Home</a>
+                <a href="<?php echo './'.$operator.'Dashboard.php'?>" class="link"><i class="#"></i>Site Home</a>
             </li>
             <li class="menu-item">
                 <a href="./my_profile.php" class="link"><i class="#"></i>My Profile</a>
-            </li>
-            <li class="menu-item">
-                <a href="./updateProduct.php" class="link"><i class="#"></i>Update Item Info</a>
-            </li>
-            <li class="menu-item">
-                <a href="./updateProfile.php" class="link"><i class="#"></i>Update User's Info</a>
-            </li>
-            <li class="menu-item">
-                <a href="./uploadProduct.php" class="link"><i class="#"></i>Upload Product</a>
-            </li>
-            <li class="menu-item">
-                <a href="./uploadService.php" class="link"><i class="#"></i>Upload Service</a>
-            </li>
-            <li class="menu-item">
-                <a href="./deleteProduct.php" class="link"><i class="#"></i>Delete Items</a>
-            </li>
-            <li class="menu-item">
-                <a href="./deleteUser.php" class="link"><i class="#"></i>Delete User</a>
             </li>
             <li class="menu-item last-item">
                 <a href="./logout.php" class="link"><i class="#"></i>Logout</a>
@@ -417,17 +573,22 @@ if(isset($_POST['save-seller'])){
 
                 $query = "SELECT * FROM Sellers WHERE Telephone = '$telephone';";
                 $sql = mysqli_query($conn, $query);
-
+                $_SESSION['user'] = $telephone;
                 while ($row = mysqli_fetch_assoc($sql)) {
             ?>
 
                     <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="post" enctype="multipart/form-data" class="myform sellers">
-                    <input type="hidden" name="seller-id" id="seller-id" value="<?php echo $row['SellerID']; ?>" >
+                        <input type="hidden" name="seller-id" id="seller-id" value="<?php echo $row['SellerID']; ?>">
                         <section class="section basic-info">
                             <div class="section-title">
                                 <h4 class="title">Basic Details</h4>
                             </div>
-                            <div class="basic-info-container container d-grid">
+                            <div class="profile-photo-container">
+                                <div class="profile-photo">
+                                    <img src="<?php echo $row['profile_path']; ?>" alt="<?php echo $row['SellerFirstName']; ?>" class="profile-image">
+                                </div>
+                            </div>
+                            <div class="seller-info-container d-grid">
                                 <div class="inputs">
                                     <label for="f-name">First Name</label>
                                     <input type="text" name="f-name" id="f-name" value="<?php echo $row['SellerFirstName']; ?>" readonly>
@@ -440,10 +601,6 @@ if(isset($_POST['save-seller'])){
                                     <label for="f-name">Gender</label>
                                     <input type="text" name="gender" id="gender" value="<?php echo $row['Gender']; ?>" readonly>
                                 </div>
-                                <div class="inputs">
-                                    <label for="id-no">National ID NO.</label>
-                                    <input type="text" name="id-no" id="id-no" value="<?php echo $row['ID_NO']; ?>" readonly>
-                                </div>
                             </div>
                         </section>
 
@@ -452,7 +609,7 @@ if(isset($_POST['save-seller'])){
                             <div class="section-title">
                                 <h4 class="title">Contacts</h4>
                             </div>
-                            <div class="contact-info-container container d-grid">
+                            <div class="seller-contact-info-container container d-grid">
                                 <div class="inputs">
                                     <label for="telephone">Telephone</label>
                                     <input type="tel" name="telephone" id="telephone" value="<?php echo $row['Telephone']; ?>">
@@ -481,12 +638,12 @@ if(isset($_POST['save-seller'])){
                                     <label for="business-name">Business Name</label>
                                     <input type="text" name="business-name" id="business-name" value="<?php echo $row['BusinessName']; ?>">
                                 </div>
-                                <div class="btn submit-btn inputs">
-                                    <button type="submit" name="save-seller" id="finish" class="save-btn" onclick="processForm()">Save</button>
-                                </div>
+
                             </div>
                         </section>
-
+                        <div class="btn submit-btn inputs">
+                            <button type="submit" name="save-seller" id="finish" class="save-btn" onclick="processForm()">Save</button>
+                        </div>
                     </form>
 
                 <?php
@@ -495,11 +652,11 @@ if(isset($_POST['save-seller'])){
 
                 $query = "SELECT * FROM Admin WHERE Telephone = '$telephone';";
                 $sql = mysqli_query($conn, $query);
-
+                $_SESSION['user'] = $telephone;
                 while ($row = mysqli_fetch_assoc($sql)) {
                 ?>
                     <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="post" enctype="multipart/form-data" class="myform">
-                    <input type="hidden" name="admin-id" id="admin-id" value="<?php echo $row['AdminID']; ?>" >
+                        <input type="hidden" name="admin-id" id="admin-id" value="<?php echo $row['AdminID']; ?>">
                         <section class="section basic-info">
                             <div class="section-title">
                                 <h4 class="title">Basic Details</h4>
@@ -540,7 +697,7 @@ if(isset($_POST['save-seller'])){
                             <div class="security-info-container container d-grid">
                                 <div class="inputs">
                                     <label for="passphrase-1">Set New Password:</label>
-                                        <input type="password" name="passphrase-1" id="passphrase-1" minlength="8" maxlength="16">
+                                    <input type="password" name="passphrase-1" id="passphrase-1" minlength="8" maxlength="16">
                                 </div>
 
                                 <div class="inputs">
@@ -575,7 +732,7 @@ if(isset($_POST['save-seller'])){
             <div class="footer-container container d-grid">
                 <div class="org-data">
                     <div class="logo">
-                        <a href="./adminDashboard.php" class="link">
+                        <a href="<?php echo './'.$operator.'Dashboard.php'?>" class="link">
                             <h3 class="logo-name">Kabarak<span class="tm">B2B</span></h3>
                         </a>
                     </div>
@@ -651,8 +808,3 @@ if(isset($_POST['save-seller'])){
 </script>
 
 </html>
-
-
-<?php
-ob_end_flush();
-?>

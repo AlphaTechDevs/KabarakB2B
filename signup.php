@@ -11,14 +11,13 @@ include_once 'connect.php';
 $first_name = $last_name = $gender = $id_no = $telephone = $email = $whatsapp_number = $business_type = $business_name = '';
 
 // Declare arrays that will store all the user's telephone numbers from the database
-$existingSellersIDs = $existingSellersTelephones = [];
+$existingSellersTelephones = [];
 // Check if the first form has already been submitted
 if (isset($_POST['register'])) {
 
     $first_name = $_POST['first-name'];
     $last_name = $_POST['last-name'];
     $gender = $_POST['gender'];
-    $id_no = $_POST['id-no'];
     $telephone = $_POST['telephone'];
     $email = $_POST['email'];
     $whatsapp_number = $_POST['whatsapp'];
@@ -39,29 +38,20 @@ if (isset($_POST['register'])) {
     //check if the data has been submitted to the database
     if (!isset($_SESSION['firstFormSubmitted'])) {
 
-        $query = "SELECT ID_NO, Telephone FROM Sellers;";
+        $query = "SELECT Telephone FROM Sellers;";
         $result = mysqli_query($conn, $query);
 
         while ($row = mysqli_fetch_assoc($result)) {
-            $existingSellersIDs[] = $row['ID_NO'];
             $existingSellersTelephones[] = $row['Telephone'];
         }
-        if (in_array($id_no, $existingSellersIDs) && in_array($telephone, $existingSellersTelephones)) {
-            $message = "User exists, kindly login";
-        } elseif (in_array($id_no, $existingSellersIDs)) {
-
-            $message =  "The email address entered is already registered. If you already have an account, kindly go to the login page";
-            $popupClass = "error-popup";
-
-            $id_no = "";
-        } elseif (in_array($telephone, $existingSellersTelephones)) {
+        if (in_array($telephone, $existingSellersTelephones)) {
 
             $message =  "The phone number is already registered";
             $popupClass = "error-popup";
 
             $telephone = "";
         } else {
-            $query = "INSERT INTO Sellers(SellerFirstName,SellerLastName,Gender,ID_NO,Telephone,Email, WhatsAppNumber,BusinessType,BusinessName) VALUES ('$first_name','$last_name','$gender','$id_no','$telephone','$email','$whatsapp_number','$business_type','$business_name')";
+            $query = "INSERT INTO Sellers(SellerFirstName,SellerLastName,Gender,Telephone,Email, WhatsAppNumber,BusinessType,BusinessName) VALUES ('$first_name','$last_name','$gender','$telephone','$email','$whatsapp_number','$business_type','$business_name')";
 
             $sql = mysqli_query($conn, $query);
             if ($sql) {
@@ -81,14 +71,14 @@ if (isset($_POST['register'])) {
         }
     } else {
 
-        $query = "SELECT SellerID FROM Sellers WHERE Telephone = '$telephone' AND ID_NO = '$id_no'";
+        $query = "SELECT SellerID FROM Sellers WHERE Telephone = '$telephone'";
         $sql = mysqli_query($conn, $query);
 
         if (mysqli_fetch_array($sql)) {
             $sellerID = $row['SellerID'];
         }
         #Update the sellers table and redirect to send OTP
-        $query = "UPDATE Sellers SET SellerFirstName = '$first_name', SellerLastName = '$last_name', Gender = '$gender', ID_NO = '$id_no',Telephone = '$telephone', Email = '$email',WhatsAppNumber = '$whatsapp_number',BusinessType = '$business_type',BusinessName = '$business_name' WHERE SellerID = '$sellerID'";
+        $query = "UPDATE Sellers SET SellerFirstName = '$first_name', SellerLastName = '$last_name', Gender = '$gender',Telephone = '$telephone', Email = '$email',WhatsAppNumber = '$whatsapp_number',BusinessType = '$business_type',BusinessName = '$business_name' WHERE SellerID = '$sellerID'";
         $sql = mysqli_query($conn, $query);
         if ($sql) {
             $_SESSION['firstFormSubmitted'] = true;
@@ -250,7 +240,12 @@ ob_end_flush();
                 height: 100vh;
                 font-size: var(--font-size-small);
             }
-
+            .popup {
+            top: 0;
+            left: 0;
+            margin: 25% 10% ;
+            width: 80%;
+        }
             .inputs {
                 margin: .5rem 1rem;
             }
@@ -305,12 +300,7 @@ ob_end_flush();
 
                     <input type="radio" name="gender" value="other" id="other">Other
                 </div>
-
-                <div class="inputs">
-                    <label for="id-no">ID_NO:</label>
-                    <input type="number" name="id-no" required class="myform-input select" min="1000000" id="id-no">
-                </div>
-
+                
                 <div class="inputs">
                     <label for="telephone">Telephone</label><br>
                     <input type="tel" name="telephone" id="telephone" class="myform-input">
@@ -329,7 +319,7 @@ ob_end_flush();
                     <label for="business-type">Business Type:</label>
                     <select name="business-type" id="category" class="myform-input select" required>
                         <option value="Gas Services">Gas Services</option>
-                        <option value="Clothes">Clothes</option>
+                        <option value="Clothing & Aparels">Clothing</option>
                         <option value="Beauty & Cosmetics">Beauty & Cosmetics</option>
                         <option value="Beddings">Beddings</option>
                         <option value="Hardware">Hardware</option>
@@ -362,5 +352,17 @@ ob_end_flush();
     </div>
 
 </body>
+<script>
+    function closePopup() {
+        document.getElementById('popup').style.display = 'none';
+    }
 
+    // Display the popup on page load if it's not empty
+    window.onload = function() {
+        var popupMessage = "<?php echo $message; ?>";
+        if (popupMessage !== "") {
+            document.getElementById('popup').style.display = 'flex';
+        }
+    };
+</script>
 </html>

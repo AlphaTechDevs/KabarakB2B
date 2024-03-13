@@ -2,6 +2,8 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
+// Set cache headers for 1 week
+header("Cache-Control: max-age=604800, public");
 session_start();
 
 include_once 'connect.php';
@@ -18,8 +20,17 @@ include_once 'connect.php';
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.min.css" rel="stylesheet">
 
     <style>
-        .featured-items{
+        .featured-items {
             background-color: var(--primary-background);
+        }
+
+        .item-data-container {
+            background-color: var(--transparent-dark-color);
+            color: var(--light-color);
+        }
+
+        .item-title {
+            color: var(--light-color);
         }
     </style>
 </head>
@@ -39,8 +50,8 @@ include_once 'connect.php';
         <nav class="navbar" id="navbar1">
             <div class="menu">
                 <ul class="list">
-                    <li class="menu-item"><a href="#" class="link">Home</a></li>
-                    <li class="menu-item"><a href="#" class="link">Contact us</a></li>
+                    <li class="menu-item"><a href="./index.html#" class="link">Home</a></li>
+                    <li class="menu-item"><a href="./index.html#contact-us" class="link">Contact us</a></li>
                     <li class="menu-item"><a href="./index.html#about-us" class="link">About us</a></li>
                     <li class="menu-item"><a href="./login.html" class="link">Login</a></li>
                     <li class="menu-item"><a href="./signup.php" class="link">Register</a></li>
@@ -54,22 +65,27 @@ include_once 'connect.php';
             <div class="menu">
                 <ul class="sidebar-items">
                     <!--Hidden on large screens-->
-                    <li class="menu-item"><a href="#" class="link item-hidden">Home</a></li>
-                    <li class="menu-item"><a href="#" class="link item-hidden">Contact us</a></li>
-                    <li class="menu-item"><a href="#about-us" class="link item-hidden">About us</a></li>
+                    <li class="menu-item"><a href="./index.html" class="link item-hidden">Home</a></li>
+                    <li class="menu-item"><a href="./index.html#contact-us" class="link item-hidden">Contact us</a></li>
+                    <li class="menu-item"><a href="./index.html#about-us" class="link item-hidden">About us</a></li>
                     <li class="menu-item"><a href="./login.html" class="link item-hidden">Login</a></li>
                     <li class="menu-item"><a href="./signup.php" class="link item-hidden">Register</a></li>
 
-                    <li class="menu-item"><a href="#" class="link">Clothing & Apparels</a></li>
-                    <li class="menu-item"><a href="#" class="link">Furniture</a></li>
-                    <li class="menu-item"><a href="#" class="link">Gas Services</a></li>
-                    <li class="menu-item"><a href="#" class="link">Health Services</a></li>
-                    <li class="menu-item"><a href="#" class="link">Beauty & Cosmetics</a></li>
-                    <li class="menu-item"><a href="#" class="link">BookShops & Stationaries</a></li>
-                    <li class="menu-item"><a href="#" class="link">General Stores</a></li>
-                    <li class="menu-item"><a href="#" class="link">HouseHolds</a></li>
-                    <li class="menu-item"><a href="#" class="link">Hardware</a></li>
-                    <li class="menu-item"><a href="#" class="link">Beddings</a></li>
+                    <li class="menu-item"><a href="./post.php#clothing&apparels" class="link">Clothing & Apparels</a>
+                    </li>
+                    <li class="menu-item"><a href="./post.php#furniture" class="link">Furniture</a></li>
+                    <li class="menu-item"><a href="./post.php#gas-services" class="link">Gas Services</a></li>
+                    <li class="menu-item"><a href="./post.php#health" class="link">Health Services</a></li>
+                    <li class="menu-item"><a href="./post.php#beauty&cosmetics" class="link">Beauty & Cosmetics</a></li>
+                    <li class="menu-item"><a href="./post.php#bookshop&stationary" class="link">BookShops &
+                            Stationaries</a></li>
+                    <li class="menu-item"><a href="./post.php#general-stores" class="link">General Stores</a></li>
+                    <li class="menu-item"><a href="./post.php#households" class="link">HouseHolds</a></li>
+                    <li class="menu-item"><a href="./post.php#hardware" class="link">Hardware</a></li>
+                    <li class="menu-item"><a href="./post.php#electronics" class="link">Electronics</a></li>
+                    <li class="menu-item"><a href="./post.php#beddings" class="link">Beddings</a></li>
+                    <li class="menu-item"><a href="./post.php#hairdressing" class="link">Hairdressing</a></li>
+                    <li class="menu-item"><a href="./post.php#haircut" class="link">Haircut</a></li>
                 </ul>
             </div>
         </nav>
@@ -86,608 +102,637 @@ include_once 'connect.php';
         </div>
     </div>
 
-    <!--Gas Services-->
+    <?php
+    if (isset($_GET['keyword'])) {
+        $keyword = mysqli_real_escape_string($conn, $_GET['keyword']);
 
-    <section class="featured-items section" id="gas-services">
-        <div class="container">
-            <h2 class="title section-title" data-name="Gas Services">Gas services</h2>
-            <div class="featured-items-container d-grid">
-                <?php
+        // Product search query
+        $productQuery = "SELECT Products.ProductName, Products.Price, Products.Brand, Products.image_path, Products.ProductDescription, Products.Category, Sellers.BusinessName AS Seller FROM Sellers INNER JOIN sellerProducts ON Sellers.SellerID = sellerProducts.SellerID INNER JOIN Products ON Products.ProductID = sellerProducts.ProductID WHERE (Products.Category LIKE '%$keyword%' OR Products.ProductName LIKE '%$keyword%' OR Sellers.BusinessName LIKE '%$keyword%');";
 
-                $category = 'Gas Services';
 
-                $query = "SELECT Products.ProductName AS ProductName, Products.Price AS Price, Products.Brand AS Brand, Products.image_path AS image_path, Sellers.BusinessName AS Seller FROM Sellers,Products,sellerProducts WHERE Sellers.SellerID = sellerProducts.SellerID AND Products.ProductID = sellerProducts.ProductID AND Products.Category = '$category';";
+        // Service search query
+        $serviceQuery = "SELECT Services.ServiceType AS ServiceType, Services.Price AS Price, Services.image_path AS image_path,Services.ServiceDescription AS ServiceDescription, Sellers.BusinessName AS Seller FROM Sellers INNER JOIN sellerServices ON Sellers.SellerID = sellerServices.SellerID INNER JOIN Services ON Services.ServiceID = sellerServices.ServiceID WHERE (Services.ServiceType LIKE '%$keyword%' OR Sellers.BusinessName LIKE '%$keyword%');";
 
-                $sql = mysqli_query($conn, $query);
+        $productSql = mysqli_query($conn, $productQuery);
+        $serviceSql = mysqli_query($conn, $serviceQuery);
 
-                while ($row = mysqli_fetch_assoc($sql)) {
-                ?>
-                    <a href="./contactSeller.php" class="item">
-                        <img src="<?php echo './'. $row['image_path']; ?>" alt="<?php echo $row['Seller']; ?>" class="item-image">
-                        <div class="item-data-container">
-                            <div class="item-data">
-                                <h5 class="title item-title"><?php echo $row['ProductName']; ?></h5>
-                                <span> <?php echo $row['Seller']; ?></span>
-                                <span> <?php echo $row['Price']; ?></span>
-                                <?php
-                                $_SESSION['seller'] = $row['Seller'];
-                                $_SESSION['price'] = $row['Price'];
-                                $_SESSION['service-type'] = $row['ProductName'];
-                                ?>
+
+    ?>
+
+        <section class="featured-items section">
+            <div class="container">
+                <h2 class="title section-title" data-name="<?php echo $keyword . ' products' ?>">
+                    <?php echo $keyword . ' products' ?>
+                </h2>
+                <div class="featured-items-container d-grid">
+                    <?php
+                    // Display products
+                    while ($row = mysqli_fetch_assoc($productSql)) {
+                    ?>
+                        <a href="./contactSeller.php?seller=<?php echo urlencode($row['Seller']); ?>&category=<?php echo urlencode($row['Category']); ?>&price=<?php echo urlencode($row['Price']); ?>&service=<?php echo urlencode($row['ProductName']); ?>&image_path=<?php echo urlencode('./' . $row['image_path']); ?>&description=<?php echo urlencode($row['ProductDescription']); ?>" class="item lazy">
+
+                            <img src="<?php echo './' . $row['image_path']; ?>" alt="<?php echo $row['Seller']; ?>" class="item-image ">
+                            <div class="item-data-container">
+                                <div class="item-data">
+                                    <h5 class="title item-title"><?php echo $row['ProductName']; ?></h5>
+                                    <span><?php echo $row['ProductDescription']; ?></span>
+                                    <span> <?php echo $row['Seller']; ?></span>
+                                    <span> <?php echo $row['Price']; ?></span>
+
+                                </div>
                             </div>
-                        </div>
-                    </a>
-                <?php
-                }
-                ?>
+                        </a>
+
+                    <?php
+                    }
+                    ?>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
 
+        <section class="featured-items section">
+            <div class="container">
+                <h2 class="title section-title" data-name="<?php echo $keyword . ' services' ?>">
+                    <?php echo $keyword . ' services' ?></h2>
+                <div class="featured-items-container d-grid">
 
-    <!--Clothings-->
-    <section class="featured-items section" id="clothing&apparels">
-        <div class="container">
-            <h2 class="title section-title" data-name="Clothing & Aparel">Clothings & Aparels</h2>
-            <div class="featured-items-container d-grid">
-                <?php
-
-                $category = 'Clothes';
-
-                $query = "SELECT Products.ProductName AS ProductName, Products.Price AS Price, Products.Brand AS Brand, Products.image_path AS image_path, Sellers.BusinessName AS Seller FROM Sellers,Products,sellerProducts WHERE Sellers.SellerID = sellerProducts.SellerID AND Products.ProductID = sellerProducts.ProductID AND Products.Category = '$category';";
-
-                $sql = mysqli_query($conn, $query);
-
-                while ($row = mysqli_fetch_assoc($sql)) {
-                ?>
-                    <a href="./contactSeller.php" class="item">
-                        <img src="<?php echo './'. $row['image_path']; ?>" alt="<?php echo $row['Seller']; ?>" class="item-image">
-                        <div class="item-data-container">
-                            <div class="item-data">
-                                <h5 class="title item-title"><?php echo $row['ProductName']; ?></h5>
-                                <span> <?php echo $row['Seller']; ?></span>
-                                <span> <?php echo $row['Price']; ?></span>
-                                <?php
-                                $_SESSION['seller'] = $row['Seller'];
-                                $_SESSION['price'] = $row['Price'];
-                                $_SESSION['service-type'] = $row['ProductName'];
-                                ?>
+                    <?php
+                    // Display services
+                    while ($row = mysqli_fetch_assoc($serviceSql)) {
+                    ?>
+                        <a href="./contactSeller.php?seller=<?php echo urlencode($row['Seller']); ?>&category=<?php echo urlencode($row['ServiceType']); ?>&price=<?php echo urlencode($row['Price']); ?>&service=<?php echo urlencode($row['ServiceType']); ?>&image_path=<?php echo urlencode('./' . $row['image_path']); ?>&description=<?php echo urlencode($row['ServiceDescription']); ?>" class="item lazy">
+                            <img src="<?php echo './' . $row['image_path']; ?>" alt="<?php echo $row['Seller']; ?>" class="item-image">
+                            <div class="item-data-container">
+                                <div class="item-data">
+                                    <h5 class="title item-title"><?php echo $row['ServiceType']; ?></h5>
+                                    <span><?php echo $row['ServiceDescription']; ?></span>
+                                    <span> <?php echo $row['Seller']; ?></span>
+                                    <span> <?php echo $row['Price']; ?></span>
+                                </div>
                             </div>
-                        </div>
-                    </a>
-                <?php
-                }
-                ?>
+                        </a>
+
+                    <?php
+                    }
+                    ?>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!--Furnitures-->
-    <section class="featured-items section" id="furniture">
-        <div class="container">
-            <h2 class="title section-title" data-name="furnitures">Furnitures</h2>
-            <div class="featured-items-container d-grid">
-                <?php
+    <?php
+    } else {
 
-                $category = 'Furniture';
+    ?>
+        <!--Gas Services-->
 
-                $query = "SELECT Products.ProductName AS ProductName, Products.Price AS Price, Products.Brand AS Brand, Products.image_path AS image_path, Sellers.BusinessName AS Seller FROM Sellers,Products,sellerProducts WHERE Sellers.SellerID = sellerProducts.SellerID AND Products.ProductID = sellerProducts.ProductID AND Products.Category = '$category';";
+        <section class="featured-items section" id="gas-services">
+            <div class="container">
+                <h2 class="title section-title" data-name="Gas Services">Gas services</h2>
+                <div class="featured-items-container d-grid">
+                    <?php
 
-                $sql = mysqli_query($conn, $query);
+                    $category = 'Gas Services';
 
-                while ($row = mysqli_fetch_assoc($sql)) {
-                ?>
-                    <a href="./contactSeller.php" class="item">
-                        <img src="<?php echo './'. $row['image_path']; ?>" alt="<?php echo $row['Seller']; ?>" class="item-image">
-                        <div class="item-data-container">
-                            <div class="item-data">
-                                <h5 class="title item-title"><?php echo $row['ProductName']; ?></h5>
-                                <span> <?php echo $row['Seller']; ?></span>
-                                <span> <?php echo $row['Price']; ?></span>
-                                <?php
-                                $_SESSION['seller'] = $row['Seller'];
-                                $_SESSION['price'] = $row['Price'];
-                                $_SESSION['service-type'] = $row['ProductName'];
-                                ?>
+                    $query = "SELECT Products.ProductName AS ProductName, Products.Price AS Price, Products.Brand AS Brand, Products.image_path AS image_path,Products.ProductDescription AS ProductDescription, Products.Category AS Category, Sellers.BusinessName AS Seller FROM Sellers,Products,sellerProducts WHERE Sellers.SellerID = sellerProducts.SellerID AND Products.ProductID = sellerProducts.ProductID AND Products.Category = '$category';";
+
+                    $sql = mysqli_query($conn, $query);
+
+                    while ($row = mysqli_fetch_assoc($sql)) {
+                    ?>
+                        <a href="./contactSeller.php?seller=<?php echo urlencode($row['Seller']); ?>&category=<?php echo urlencode($row['Category']); ?>&price=<?php echo urlencode($row['Price']); ?>&service=<?php echo urlencode($row['ProductName']); ?>&image_path=<?php echo urlencode('./' . $row['image_path']); ?>&description=<?php echo urlencode($row['ProductDescription']); ?>" class="item lazy">
+                            <img src="<?php echo './' . $row['image_path']; ?>" alt="<?php echo $row['Seller']; ?>" class="item-image">
+                            <div class="item-data-container">
+                                <div class="item-data">
+                                    <h5 class="title item-title"><?php echo $row['ProductName']; ?></h5>
+                                    <span><?php echo $row['ProductDescription']; ?></span>
+                                    <span> <?php echo $row['Seller']; ?></span>
+                                    <span> <?php echo $row['Price']; ?></span>
+
+                                </div>
                             </div>
-                        </div>
-                    </a>
-                <?php
-                }
-                ?>
+                        </a>
+                    <?php
+                    }
+                    ?>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
 
 
-    <!--Beddings-->
-    <section class="featured-items section" id="beddings">
-        <div class="container">
-            <h2 class="title section-title" data-name="beddings">Beddings</h2>
-            <div class="featured-items-container d-grid">
-                <?php
+        <!--Clothings-->
+        <section class="featured-items section" id="clothing&apparels">
+            <div class="container">
+                <h2 class="title section-title" data-name="Clothing & Aparel">Clothings & Aparels</h2>
+                <div class="featured-items-container d-grid">
+                    <?php
 
-                $category = 'Beddings';
+                    $category = 'Clothing & Aparels';
 
-                $query = "SELECT Products.ProductName AS ProductName, Products.Price AS Price, Products.Brand AS Brand, Products.image_path AS image_path, Sellers.BusinessName AS Seller FROM Sellers,Products,sellerProducts WHERE Sellers.SellerID = sellerProducts.SellerID AND Products.ProductID = sellerProducts.ProductID AND Products.Category = '$category';";
+                    $query = "SELECT Products.ProductName AS ProductName, Products.Price AS Price, Products.Brand AS Brand, Products.image_path AS image_path,Products.ProductDescription AS ProductDescription, Products.Category AS Category, Sellers.BusinessName AS Seller FROM Sellers,Products,sellerProducts WHERE Sellers.SellerID = sellerProducts.SellerID AND Products.ProductID = sellerProducts.ProductID AND Products.Category = '$category';";
 
-                $sql = mysqli_query($conn, $query);
+                    $sql = mysqli_query($conn, $query);
 
-                while ($row = mysqli_fetch_assoc($sql)) {
-                ?>
-                    <a href="./contactSeller.php" class="item">
-                        <img src="<?php echo './'. $row['image_path']; ?>" alt="<?php echo $row['Seller']; ?>" class="item-image">
-                        <div class="item-data-container">
-                            <div class="item-data">
-                                <h5 class="title item-title"><?php echo $row['ProductName']; ?></h5>
-                                <span> <?php echo $row['Seller']; ?></span>
-                                <span> <?php echo $row['Price']; ?></span>
-                                <?php
-                                $_SESSION['seller'] = $row['Seller'];
-                                $_SESSION['price'] = $row['Price'];
-                                $_SESSION['service-type'] = $row['ProductName'];
-                                ?>
+                    while ($row = mysqli_fetch_assoc($sql)) {
+                    ?>
+                        <a href="./contactSeller.php?seller=<?php echo urlencode($row['Seller']); ?>&category=<?php echo urlencode($row['Category']); ?>&price=<?php echo urlencode($row['Price']); ?>&service=<?php echo urlencode($row['ProductName']); ?>&image_path=<?php echo urlencode('./' . $row['image_path']); ?>&description=<?php echo urlencode($row['ProductDescription']); ?>" class="item lazy">
+                            <img src="<?php echo './' . $row['image_path']; ?>" alt="<?php echo $row['Seller']; ?>" class="item-image">
+                            <div class="item-data-container">
+                                <div class="item-data">
+                                    <h5 class="title item-title"><?php echo $row['ProductName']; ?></h5>
+                                    <span><?php echo $row['ProductDescription']; ?></span>
+                                    <span> <?php echo $row['Seller']; ?></span>
+                                    <span> <?php echo $row['Price']; ?></span>
+
+                                </div>
                             </div>
-                        </div>
-                    </a>
-                <?php
-                }
-                ?>
+                        </a>
+                    <?php
+                    }
+                    ?>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
 
+        <!--Furnitures-->
+        <section class="featured-items section" id="furniture">
+            <div class="container">
+                <h2 class="title section-title" data-name="furnitures">Furnitures</h2>
+                <div class="featured-items-container d-grid">
+                    <?php
 
-    <!--Beauty & Cosmetics-->
-    <section class="featured-items section" id="beauty&cosmetics">
-        <div class="container">
-            <h2 class="title section-title" data-name="Beauty & Cosmetics">Beauty & Cosmetics</h2>
-            <div class="featured-items-container d-grid">
-                <?php
+                    $category = 'Furniture';
 
-                $category = 'Beauty & Cosmetics';
+                    $query = "SELECT Products.ProductName AS ProductName, Products.Price AS Price, Products.Brand AS Brand, Products.image_path AS image_path,Products.ProductDescription AS ProductDescription, Products.Category AS Category, Sellers.BusinessName AS Seller FROM Sellers,Products,sellerProducts WHERE Sellers.SellerID = sellerProducts.SellerID AND Products.ProductID = sellerProducts.ProductID AND Products.Category = '$category';";
 
-                $query = "SELECT Products.ProductName AS ProductName, Products.Price AS Price, Products.Brand AS Brand, Products.image_path AS image_path, Sellers.BusinessName AS Seller FROM Sellers,Products,sellerProducts WHERE Sellers.SellerID = sellerProducts.SellerID AND Products.ProductID = sellerProducts.ProductID AND Products.Category = '$category';";
+                    $sql = mysqli_query($conn, $query);
 
-                $sql = mysqli_query($conn, $query);
+                    while ($row = mysqli_fetch_assoc($sql)) {
+                    ?>
+                        <a href="./contactSeller.php?seller=<?php echo urlencode($row['Seller']); ?>&category=<?php echo urlencode($row['Category']); ?>&price=<?php echo urlencode($row['Price']); ?>&service=<?php echo urlencode($row['ProductName']); ?>&image_path=<?php echo urlencode('./' . $row['image_path']); ?>&description=<?php echo urlencode($row['ProductDescription']); ?>" class="item lazy">
+                            <img src="<?php echo './' . $row['image_path']; ?>" alt="<?php echo $row['Seller']; ?>" class="item-image">
+                            <div class="item-data-container">
+                                <div class="item-data">
+                                    <h5 class="title item-title"><?php echo $row['ProductName']; ?></h5>
+                                    <span><?php echo $row['ProductDescription']; ?></span>
+                                    <span> <?php echo $row['Seller']; ?></span>
+                                    <span> <?php echo $row['Price']; ?></span>
 
-                while ($row = mysqli_fetch_assoc($sql)) {
-                ?>
-                    <a href="./contactSeller.php" class="item">
-                        <img src="<?php echo './'. $row['image_path']; ?>" alt="<?php echo $row['Seller']; ?>" class="item-image">
-                        <div class="item-data-container">
-                            <div class="item-data">
-                                <h5 class="title item-title"><?php echo $row['ProductName']; ?></h5>
-                                <span> <?php echo $row['Seller']; ?></span>
-                                <span> <?php echo $row['Price']; ?></span>
-                                <?php
-                                $_SESSION['seller'] = $row['Seller'];
-                                $_SESSION['price'] = $row['Price'];
-                                $_SESSION['service-type'] = $row['ProductName'];
-                                ?>
+                                </div>
                             </div>
-                        </div>
-                    </a>
-                <?php
-                }
-                ?>
+                        </a>
+                    <?php
+                    }
+                    ?>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
 
 
-    <!--Hardware-->
-    <section class="featured-items section" id="hardware">
-        <div class="container">
-            <h2 class="title section-title" data-name="Hardware">Hardware</h2>
-            <div class="featured-items-container d-grid">
-                <?php
+        <!--Beddings-->
+        <section class="featured-items section" id="beddings">
+            <div class="container">
+                <h2 class="title section-title" data-name="beddings">Beddings</h2>
+                <div class="featured-items-container d-grid">
+                    <?php
 
-                $category = 'Hardware';
+                    $category = 'Beddings';
 
-                $query = "SELECT Products.ProductName AS ProductName, Products.Price AS Price, Products.Brand AS Brand, Products.image_path AS image_path, Sellers.BusinessName AS Seller FROM Sellers,Products,sellerProducts WHERE Sellers.SellerID = sellerProducts.SellerID AND Products.ProductID = sellerProducts.ProductID AND Products.Category = '$category';";
+                    $query = "SELECT Products.ProductName AS ProductName, Products.Price AS Price, Products.Brand AS Brand, Products.image_path AS image_path,Products.ProductDescription AS ProductDescription, Products.Category AS Category, Sellers.BusinessName AS Seller FROM Sellers,Products,sellerProducts WHERE Sellers.SellerID = sellerProducts.SellerID AND Products.ProductID = sellerProducts.ProductID AND Products.Category = '$category';";
 
-                $sql = mysqli_query($conn, $query);
+                    $sql = mysqli_query($conn, $query);
 
-                while ($row = mysqli_fetch_assoc($sql)) {
-                ?>
-                    <a href="./contactSeller.php" class="item">
-                        <img src="<?php echo './'. $row['image_path']; ?>" alt="<?php echo $row['Seller']; ?>" class="item-image">
-                        <div class="item-data-container">
-                            <div class="item-data">
-                                <h5 class="title item-title"><?php echo $row['ProductName']; ?></h5>
-                                <span> <?php echo $row['Seller']; ?></span>
-                                <span> <?php echo $row['Price']; ?></span>
-                                <?php
-                                $_SESSION['seller'] = $row['Seller'];
-                                $_SESSION['price'] = $row['Price'];
-                                $_SESSION['service-type'] = $row['ProductName'];
-                                ?>
+                    while ($row = mysqli_fetch_assoc($sql)) {
+                    ?>
+                        <a href="./contactSeller.php?seller=<?php echo urlencode($row['Seller']); ?>&category=<?php echo urlencode($row['Category']); ?>&price=<?php echo urlencode($row['Price']); ?>&service=<?php echo urlencode($row['ProductName']); ?>&image_path=<?php echo urlencode('./' . $row['image_path']); ?>&description=<?php echo urlencode($row['ProductDescription']); ?>" class="item lazy">
+                            <img src="<?php echo './' . $row['image_path']; ?>" alt="<?php echo $row['Seller']; ?>" class="item-image">
+                            <div class="item-data-container">
+                                <div class="item-data">
+                                    <h5 class="title item-title"><?php echo $row['ProductName']; ?></h5>
+                                    <span><?php echo $row['ProductDescription']; ?></span>
+                                    <span> <?php echo $row['Seller']; ?></span>
+                                    <span> <?php echo $row['Price']; ?></span>
+
+                                </div>
                             </div>
-                        </div>
-                    </a>
-                <?php
-                }
-                ?>
+                        </a>
+                    <?php
+                    }
+                    ?>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!--Households-->
 
-    <section class="featured-items section" id="households">
-        <div class="container">
-            <h2 class="title section-title" data-name="Households">HouseHolds</h2>
-            <div class="featured-items-container d-grid">
-                <?php
+        <!--Beauty & Cosmetics-->
+        <section class="featured-items section" id="beauty&cosmetics">
+            <div class="container">
+                <h2 class="title section-title" data-name="Beauty & Cosmetics">Beauty & Cosmetics</h2>
+                <div class="featured-items-container d-grid">
+                    <?php
 
-                $category = 'Households';
+                    $category = 'Beauty & Cosmetics';
 
-                $query = "SELECT Products.ProductName AS ProductName, Products.Price AS Price, Products.Brand AS Brand, Products.image_path AS image_path, Sellers.BusinessName AS Seller FROM Sellers,Products,sellerProducts WHERE Sellers.SellerID = sellerProducts.SellerID AND Products.ProductID = sellerProducts.ProductID AND Products.Category = '$category';";
+                    $query = "SELECT Products.ProductName AS ProductName, Products.Price AS Price, Products.Brand AS Brand, Products.image_path AS image_path,Products.ProductDescription AS ProductDescription, Products.Category AS Category, Sellers.BusinessName AS Seller FROM Sellers,Products,sellerProducts WHERE Sellers.SellerID = sellerProducts.SellerID AND Products.ProductID = sellerProducts.ProductID AND Products.Category = '$category';";
 
-                $sql = mysqli_query($conn, $query);
+                    $sql = mysqli_query($conn, $query);
 
-                while ($row = mysqli_fetch_assoc($sql)) {
-                ?>
-                    <a href="./contactSeller.php" class="item">
-                        <img src="<?php echo './'. $row['image_path']; ?>" alt="<?php echo $row['Seller']; ?>" class="item-image">
-                        <div class="item-data-container">
-                            <div class="item-data">
-                                <h5 class="title item-title"><?php echo $row['ProductName']; ?></h5>
-                                <span> <?php echo $row['Seller']; ?></span>
-                                <span> <?php echo $row['Price']; ?></span>
-                                <?php
-                                $_SESSION['seller'] = $row['Seller'];
-                                $_SESSION['price'] = $row['Price'];
-                                $_SESSION['service-type'] = $row['ProductName'];
-                                ?>
+                    while ($row = mysqli_fetch_assoc($sql)) {
+                    ?>
+                        <a href="./contactSeller.php?seller=<?php echo urlencode($row['Seller']); ?>&category=<?php echo urlencode($row['Category']); ?>&price=<?php echo urlencode($row['Price']); ?>&service=<?php echo urlencode($row['ProductName']); ?>&image_path=<?php echo urlencode('./' . $row['image_path']); ?>&description=<?php echo urlencode($row['ProductDescription']); ?>" class="item lazy">
+                            <img src="<?php echo './' . $row['image_path']; ?>" alt="<?php echo $row['Seller']; ?>" class="item-image">
+                            <div class="item-data-container">
+                                <div class="item-data">
+                                    <h5 class="title item-title"><?php echo $row['ProductName']; ?></h5>
+                                    <span><?php echo $row['ProductDescription']; ?></span>
+                                    <span> <?php echo $row['Seller']; ?></span>
+                                    <span> <?php echo $row['Price']; ?></span>
+
+                                </div>
                             </div>
-                        </div>
-                    </a>
-                <?php
-                }
-                ?>
+                        </a>
+                    <?php
+                    }
+                    ?>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
 
 
-    <!--Bookshop & Stationary-->
-    <section class="featured-items section" id="bookshop&stationary">
-        <div class="container">
-            <h2 class="title section-title" data-name="Bookshop & Stationary">Bookshop & Stationary</h2>
-            <div class="featured-items-container d-grid">
-                <?php
+        <!--Hardware-->
+        <section class="featured-items section" id="hardware">
+            <div class="container">
+                <h2 class="title section-title" data-name="Hardware">Hardware</h2>
+                <div class="featured-items-container d-grid">
+                    <?php
 
-                $category = 'Bookshop & Stationary';
+                    $category = 'Hardware';
 
-                $query = "SELECT Products.ProductName AS ProductName, Products.Price AS Price, Products.Brand AS Brand, Products.image_path AS image_path, Sellers.BusinessName AS Seller FROM Sellers,Products,sellerProducts WHERE Sellers.SellerID = sellerProducts.SellerID AND Products.ProductID = sellerProducts.ProductID AND Products.Category = '$category';";
+                    $query = "SELECT Products.ProductName AS ProductName, Products.Price AS Price, Products.Brand AS Brand, Products.image_path AS image_path,Products.ProductDescription AS ProductDescription, Products.Category AS Category, Sellers.BusinessName AS Seller FROM Sellers,Products,sellerProducts WHERE Sellers.SellerID = sellerProducts.SellerID AND Products.ProductID = sellerProducts.ProductID AND Products.Category = '$category';";
 
-                $sql = mysqli_query($conn, $query);
+                    $sql = mysqli_query($conn, $query);
 
-                while ($row = mysqli_fetch_assoc($sql)) {
-                ?>
-                    <a href="./contactSeller.php" class="item">
-                        <img src="<?php echo './'. $row['image_path']; ?>" alt="<?php echo $row['Seller']; ?>" class="item-image">
-                        <div class="item-data-container">
-                            <div class="item-data">
-                                <h5 class="title item-title"><?php echo $row['ProductName']; ?></h5>
-                                <span> <?php echo $row['Seller']; ?></span>
-                                <span> <?php echo $row['Price']; ?></span>
-                                <?php
-                                $_SESSION['seller'] = $row['Seller'];
-                                $_SESSION['price'] = $row['Price'];
-                                $_SESSION['service-type'] = $row['ProductName'];
-                                ?>
+                    while ($row = mysqli_fetch_assoc($sql)) {
+                    ?>
+                        <a href="./contactSeller.php?seller=<?php echo urlencode($row['Seller']); ?>&category=<?php echo urlencode($row['Category']); ?>&price=<?php echo urlencode($row['Price']); ?>&service=<?php echo urlencode($row['ProductName']); ?>&image_path=<?php echo urlencode('./' . $row['image_path']); ?>&description=<?php echo urlencode($row['ProductDescription']); ?>" class="item lazy">
+                            <img src="<?php echo './' . $row['image_path']; ?>" alt="<?php echo $row['Seller']; ?>" class="item-image">
+                            <div class="item-data-container">
+                                <div class="item-data">
+                                    <h5 class="title item-title"><?php echo $row['ProductName']; ?></h5>
+                                    <span><?php echo $row['ProductDescription']; ?></span>
+                                    <span> <?php echo $row['Seller']; ?></span>
+                                    <span> <?php echo $row['Price']; ?></span>
+
+                                </div>
                             </div>
-                        </div>
-                    </a>
-                <?php
-                }
-                ?>
+                        </a>
+                    <?php
+                    }
+                    ?>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!--General Stores-->
-    <section class="featured-items section" id="general-stores">
-        <div class="container">
-            <h2 class="title section-title" data-name="General Stores">General Stores</h2>
-            <div class="featured-items-container d-grid">
-                <?php
+        <!--Households-->
 
-                $category = 'General Stores';
+        <section class="featured-items section" id="households">
+            <div class="container">
+                <h2 class="title section-title" data-name="Households">HouseHolds</h2>
+                <div class="featured-items-container d-grid">
+                    <?php
 
-                $query = "SELECT Products.ProductName AS ProductName, Products.Price AS Price, Products.Brand AS Brand, Products.image_path AS image_path, Sellers.BusinessName AS Seller FROM Sellers,Products,sellerProducts WHERE Sellers.SellerID = sellerProducts.SellerID AND Products.ProductID = sellerProducts.ProductID AND Products.Category = '$category';";
+                    $category = 'Households';
 
-                $sql = mysqli_query($conn, $query);
+                    $query = "SELECT Products.ProductName AS ProductName, Products.Price AS Price, Products.Brand AS Brand, Products.image_path AS image_path,Products.ProductDescription AS ProductDescription, Products.Category AS Category, Sellers.BusinessName AS Seller FROM Sellers,Products,sellerProducts WHERE Sellers.SellerID = sellerProducts.SellerID AND Products.ProductID = sellerProducts.ProductID AND Products.Category = '$category';";
 
-                while ($row = mysqli_fetch_assoc($sql)) {
-                ?>
-                    <a href="./contactSeller.php" class="item">
-                        <img src="<?php echo './'. $row['image_path']; ?>" alt="<?php echo $row['Seller']; ?>" class="item-image">
-                        <div class="item-data-container">
-                            <div class="item-data">
-                                <h5 class="title item-title"><?php echo $row['ProductName']; ?></h5>
-                                <span> <?php echo $row['Seller']; ?></span>
-                                <span> <?php echo $row['Price']; ?></span>
-                                <?php
-                                $_SESSION['seller'] = $row['Seller'];
-                                $_SESSION['price'] = $row['Price'];
-                                $_SESSION['service-type'] = $row['ProductName'];
-                                ?>
+                    $sql = mysqli_query($conn, $query);
+
+                    while ($row = mysqli_fetch_assoc($sql)) {
+                    ?>
+                        <a href="./contactSeller.php?seller=<?php echo urlencode($row['Seller']); ?>&category=<?php echo urlencode($row['Category']); ?>&price=<?php echo urlencode($row['Price']); ?>&service=<?php echo urlencode($row['ProductName']); ?>&image_path=<?php echo urlencode('./' . $row['image_path']); ?>&description=<?php echo urlencode($row['ProductDescription']); ?>" class="item lazy">
+                            <img src="<?php echo './' . $row['image_path']; ?>" alt="<?php echo $row['Seller']; ?>" class="item-image">
+                            <div class="item-data-container">
+                                <div class="item-data">
+                                    <h5 class="title item-title"><?php echo $row['ProductName']; ?></h5>
+                                    <span><?php echo $row['ProductDescription']; ?></span>
+                                    <span> <?php echo $row['Seller']; ?></span>
+                                    <span> <?php echo $row['Price']; ?></span>
+
+                                </div>
                             </div>
-                        </div>
-                    </a>
-                <?php
-                }
-                ?>
+                        </a>
+                    <?php
+                    }
+                    ?>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
 
 
-    <!--Electronics-->
-    <section class="featured-items section" id="electronics">
-        <div class="container">
-            <h2 class="title section-title" data-name="Electronics">Electronics</h2>
-            <div class="featured-items-container d-grid">
-                <?php
+        <!--Bookshop & Stationary-->
+        <section class="featured-items section" id="bookshop&stationary">
+            <div class="container">
+                <h2 class="title section-title" data-name="Bookshop & Stationary">Bookshop & Stationary</h2>
+                <div class="featured-items-container d-grid">
+                    <?php
 
-                $category = 'Electronics';
+                    $category = 'Bookshop & Stationary';
 
-                $query = "SELECT Products.ProductName AS ProductName, Products.Price AS Price, Products.Brand AS Brand, Products.image_path AS image_path, Sellers.BusinessName AS Seller FROM Sellers,Products,sellerProducts WHERE Sellers.SellerID = sellerProducts.SellerID AND Products.ProductID = sellerProducts.ProductID AND Products.Category = '$category';";
+                    $query = "SELECT Products.ProductName AS ProductName, Products.Price AS Price, Products.Brand AS Brand, Products.image_path AS image_path,Products.ProductDescription AS ProductDescription, Products.Category AS Category, Sellers.BusinessName AS Seller FROM Sellers,Products,sellerProducts WHERE Sellers.SellerID = sellerProducts.SellerID AND Products.ProductID = sellerProducts.ProductID AND Products.Category = '$category';";
 
-                $sql = mysqli_query($conn, $query);
+                    $sql = mysqli_query($conn, $query);
 
-                while ($row = mysqli_fetch_assoc($sql)) {
-                ?>
-                    <a href="./contactSeller.php" class="item">
-                        <img src="<?php echo './'. $row['image_path']; ?>" alt="<?php echo $row['Seller']; ?>" class="item-image">
-                        <div class="item-data-container">
-                            <div class="item-data">
-                                <h5 class="title item-title"><?php echo $row['ProductName']; ?></h5>
-                                <span> <?php echo $row['Seller']; ?></span>
-                                <span> <?php echo $row['Price']; ?></span>
-                                <?php
-                                $_SESSION['seller'] = $row['Seller'];
-                                $_SESSION['price'] = $row['Price'];
-                                $_SESSION['service-type'] = $row['ProductName'];
-                                ?>
+                    while ($row = mysqli_fetch_assoc($sql)) {
+                    ?>
+                        <a href="./contactSeller.php?seller=<?php echo urlencode($row['Seller']); ?>&category=<?php echo urlencode($row['Category']); ?>&price=<?php echo urlencode($row['Price']); ?>&service=<?php echo urlencode($row['ProductName']); ?>&image_path=<?php echo urlencode('./' . $row['image_path']); ?>&description=<?php echo urlencode($row['ProductDescription']); ?>" class="item lazy">
+                            <img src="<?php echo './' . $row['image_path']; ?>" alt="<?php echo $row['Seller']; ?>" class="item-image">
+                            <div class="item-data-container">
+                                <div class="item-data">
+                                    <h5 class="title item-title"><?php echo $row['ProductName']; ?></h5>
+                                    <span><?php echo $row['ProductDescription']; ?></span>
+                                    <span> <?php echo $row['Seller']; ?></span>
+                                    <span> <?php echo $row['Price']; ?></span>
+
+                                </div>
                             </div>
-                        </div>
-                    </a>
-                <?php
-                }
-                ?>
+                        </a>
+                    <?php
+                    }
+                    ?>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!--Health Services-->
-    <section class="featured-items section" id="health">
-        <div class="container">
-            <h2 class="title section-title" data-name="Health Services">Health Services</h2>
-            <div class="featured-items-container d-grid">
-                <?php
+        <!--General Stores-->
+        <section class="featured-items section" id="general-stores">
+            <div class="container">
+                <h2 class="title section-title" data-name="General Stores">General Stores</h2>
+                <div class="featured-items-container d-grid">
+                    <?php
 
-                $category = 'Health Services';
+                    $category = 'General Stores';
 
-                $query = "SELECT Services.ServiceType AS ServiceType, Services.Price AS Price,Services.image_path AS image_path, Sellers.BusinessName AS Seller FROM Sellers,Services,sellerServices WHERE Sellers.SellerID = sellerServices.SellerID AND Services.ServiceID = sellerServices.ServiceID AND Services.ServiceType = '$category';";
+                    $query = "SELECT Products.ProductName AS ProductName, Products.Price AS Price, Products.Brand AS Brand, Products.image_path AS image_path,Products.ProductDescription AS ProductDescription, Products.Category AS Category, Sellers.BusinessName AS Seller FROM Sellers,Products,sellerProducts WHERE Sellers.SellerID = sellerProducts.SellerID AND Products.ProductID = sellerProducts.ProductID AND Products.Category = '$category';";
 
-                $sql = mysqli_query($conn, $query);
+                    $sql = mysqli_query($conn, $query);
 
-                while ($row = mysqli_fetch_assoc($sql)) {
-                ?>
-                    <a href="./contactSeller.php" class="item">
-                        <img src="<?php echo './'. $row['image_path']; ?>" alt="<?php echo $row['Seller']; ?>" class="item-image">
-                        <div class="item-data-container">
-                            <div class="item-data">
-                                <h5 class="title item-title"><?php echo $row['ServiceType']; ?></h5>
-                                <span> <?php echo $row['Seller']; ?></span>
-                                <span> <?php echo $row['Price']; ?></span>
-                                <?php
-                                $_SESSION['seller'] = $row['Seller'];
-                                $_SESSION['service-type'] = $row['ServiceType'];
-                                $_SESSION['price'] = $row['Price'];
-                                ?>
+                    while ($row = mysqli_fetch_assoc($sql)) {
+                    ?>
+                        <a href="./contactSeller.php?seller=<?php echo urlencode($row['Seller']); ?>&category=<?php echo urlencode($row['Category']); ?>&price=<?php echo urlencode($row['Price']); ?>&service=<?php echo urlencode($row['ProductName']); ?>&image_path=<?php echo urlencode('./' . $row['image_path']); ?>&description=<?php echo urlencode($row['ProductDescription']); ?>" class="item lazy">
+                            <img src="<?php echo './' . $row['image_path']; ?>" alt="<?php echo $row['Seller']; ?>" class="item-image">
+                            <div class="item-data-container">
+                                <div class="item-data">
+                                    <h5 class="title item-title"><?php echo $row['ProductName']; ?></h5>
+                                    <span><?php echo $row['ProductDescription']; ?></span>
+                                    <span> <?php echo $row['Seller']; ?></span>
+                                    <span> <?php echo $row['Price']; ?></span>
+
+                                </div>
                             </div>
-                        </div>
-                    </a>
-                <?php
-                }
-                ?>
+                        </a>
+                    <?php
+                    }
+                    ?>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
 
 
-    <!--Hairdressing-->
-    <section class="featured-items section" id="hairdressing">
-        <div class="container">
-            <h2 class="title section-title" data-name="Hairdressing">Hairdressing</h2>
-            <div class="featured-items-container d-grid">
-                <?php
+        <!--Electronics-->
+        <section class="featured-items section" id="electronics">
+            <div class="container">
+                <h2 class="title section-title" data-name="Electronics">Electronics</h2>
+                <div class="featured-items-container d-grid">
+                    <?php
 
-                $category = 'Hairdressing';
+                    $category = 'Electronics';
 
-                $query = "SELECT Services.ServiceType AS ServiceType, Services.Price AS Price,Services.image_path AS image_path, Sellers.BusinessName AS Seller FROM Sellers,Services,sellerServices WHERE Sellers.SellerID = sellerServices.SellerID AND Services.ServiceID = sellerServices.ServiceID AND Services.ServiceType = '$category';";
+                    $query = "SELECT Products.ProductName AS ProductName, Products.Price AS Price, Products.Brand AS Brand, Products.image_path AS image_path,Products.ProductDescription AS ProductDescription, Products.Category AS Category, Sellers.BusinessName AS Seller FROM Sellers,Products,sellerProducts WHERE Sellers.SellerID = sellerProducts.SellerID AND Products.ProductID = sellerProducts.ProductID AND Products.Category = '$category';";
 
-                $sql = mysqli_query($conn, $query);
+                    $sql = mysqli_query($conn, $query);
 
-                while ($row = mysqli_fetch_assoc($sql)) {
-                ?>
-                    <a href="./contactSeller.php" class="item">
-                        <img src="<?php echo './'. $row['image_path']; ?>" alt="<?php echo $row['Seller']; ?>" class="item-image">
-                        <div class="item-data-container">
-                            <div class="item-data">
-                                <h5 class="title item-title"><?php echo $row['ServiceType']; ?></h5>
-                                <span> <?php echo $row['Seller']; ?></span>
-                                <span> <?php echo $row['Price']; ?></span>
-                                <?php
-                                $_SESSION['seller'] = $row['Seller'];
-                                $_SESSION['service-type'] = $row['ServiceType'];
-                                $_SESSION['price'] = $row['Price'];
-                                ?>
+                    while ($row = mysqli_fetch_assoc($sql)) {
+                    ?>
+                        <a href="./contactSeller.php?seller=<?php echo urlencode($row['Seller']); ?>&category=<?php echo urlencode($row['Category']); ?>&price=<?php echo urlencode($row['Price']); ?>&service=<?php echo urlencode($row['ProductName']); ?>&image_path=<?php echo urlencode('./' . $row['image_path']); ?>&description=<?php echo urlencode($row['ProductDescription']); ?>" class="item lazy">
+                            <img src="<?php echo './' . $row['image_path']; ?>" alt="<?php echo $row['Seller']; ?>" class="item-image">
+                            <div class="item-data-container">
+                                <div class="item-data">
+                                    <h5 class="title item-title"><?php echo $row['ProductName']; ?></h5>
+                                    <span><?php echo $row['ProductDescription']; ?></span>
+                                    <span> <?php echo $row['Seller']; ?></span>
+                                    <span> <?php echo $row['Price']; ?></span>
+
+                                </div>
                             </div>
-                        </div>
-                    </a>
-                <?php
-                }
-                ?>
+                        </a>
+                    <?php
+                    }
+                    ?>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!--Haircut-->
-    <section class="featured-items section" id="haircut">
-        <div class="container">
-            <h2 class="title section-title" data-name="Haircut">Haircut</h2>
-            <div class="featured-items-container d-grid">
-                <?php
+        <!--Health Services-->
+        <section class="featured-items section" id="health">
+            <div class="container">
+                <h2 class="title section-title" data-name="Health Services">Health Services</h2>
+                <div class="featured-items-container d-grid">
+                    <?php
 
-                $category = 'Haircut';
+                    $category = 'Health Services';
 
-                $query = "SELECT Services.ServiceType AS ServiceType, Services.Price AS Price,Services.image_path AS image_path, Sellers.BusinessName AS Seller FROM Sellers,Services,sellerServices WHERE Sellers.SellerID = sellerServices.SellerID AND Services.ServiceID = sellerServices.ServiceID AND Services.ServiceType = '$category';";
+                    $query = "SELECT Services.ServiceType AS ServiceType, Services.Price AS Price,Services.image_path AS image_path, Services.ServiceDescription AS ServiceDescription, Sellers.BusinessName AS Seller FROM Sellers,Services,sellerServices WHERE Sellers.SellerID = sellerServices.SellerID AND Services.ServiceID = sellerServices.ServiceID AND Services.ServiceType = '$category';";
 
-                $sql = mysqli_query($conn, $query);
+                    $sql = mysqli_query($conn, $query);
 
-                while ($row = mysqli_fetch_assoc($sql)) {
-                ?>
-                    <a href="./contactSeller.php" class="item">
-                        <img src="<?php echo './'. $row['image_path']; ?>" alt="<?php echo $row['Seller']; ?>" class="item-image">
-                        <div class="item-data-container">
-                            <div class="item-data">
-                                <h5 class="title item-title"><?php echo $row['ServiceType']; ?></h5>
-                                <span> <?php echo $row['Seller']; ?></span>
-                                <span> <?php echo $row['Price']; ?></span>
-                                <?php
-                                $_SESSION['seller'] = $row['Seller'];
-                                $_SESSION['service-type'] = $row['ServiceType'];
-                                $_SESSION['price'] = $row['Price'];
-                                ?>
+                    while ($row = mysqli_fetch_assoc($sql)) {
+                    ?>
+                        <a href="./contactSeller.php?seller=<?php echo urlencode($row['Seller']); ?>&category=<?php echo urlencode($row['ServiceType']); ?>&price=<?php echo urlencode($row['Price']); ?>&service=<?php echo urlencode($row['ServiceType']); ?>&image_path=<?php echo urlencode('./' . $row['image_path']); ?>&description=<?php echo urlencode($row['ServiceDescription']); ?>" class="item lazy">
+                            <img src="<?php echo './' . $row['image_path']; ?>" alt="<?php echo $row['Seller']; ?>" class="item-image">
+                            <div class="item-data-container">
+                                <div class="item-data">
+                                    <h5 class="title item-title"><?php echo $row['ServiceType']; ?></h5>
+                                    <span> <?php echo $row['Seller']; ?></span>
+                                    <span> <?php echo $row['ServiceDescription']; ?></span>
+                                    <span> <?php echo $row['Price']; ?></span>
+                                </div>
                             </div>
-                        </div>
-                    </a>
-                <?php
-                }
-                ?>
+                        </a>
+                    <?php
+                    }
+                    ?>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
 
 
-    <!--Electronics Repair-->
-    <section class="featured-items section" id="electronics-repair">
-        <div class="container">
-            <h2 class="title section-title" data-name="Electronics Repair">Electronics Repair</h2>
-            <div class="featured-items-container d-grid">
-                <?php
+        <!--Hairdressing-->
+        <section class="featured-items section" id="hairdressing">
+            <div class="container">
+                <h2 class="title section-title" data-name="Hairdressing">Hairdressing</h2>
+                <div class="featured-items-container d-grid">
+                    <?php
 
-                $category = 'Electronics Repair';
+                    $category = 'Hairdressing';
 
-                $query = "SELECT Services.ServiceType AS ServiceType, Services.Price AS Price,Services.image_path AS image_path, Sellers.BusinessName AS Seller FROM Sellers,Services,sellerServices WHERE Sellers.SellerID = sellerServices.SellerID AND Services.ServiceID = sellerServices.ServiceID AND Services.ServiceType = '$category';";
+                    $query = "SELECT Services.ServiceType AS ServiceType, Services.Price AS Price,Services.image_path AS image_path, Services.ServiceDescription AS ServiceDescription, Sellers.BusinessName AS Seller FROM Sellers,Services,sellerServices WHERE Sellers.SellerID = sellerServices.SellerID AND Services.ServiceID = sellerServices.ServiceID AND Services.ServiceType = '$category';";
 
-                $sql = mysqli_query($conn, $query);
+                    $sql = mysqli_query($conn, $query);
 
-                while ($row = mysqli_fetch_assoc($sql)) {
-                ?>
-                    <a href="./contactSeller.php" class="item">
-                        <img src="<?php echo './'. $row['image_path']; ?>" alt="<?php echo $row['Seller']; ?>" class="item-image">
-                        <div class="item-data-container">
-                            <div class="item-data">
-                                <h5 class="title item-title"><?php echo $row['ServiceType']; ?></h5>
-                                <span> <?php echo $row['Seller']; ?></span>
-                                <span> <?php echo $row['Price']; ?></span>
-                                <?php
-                                $_SESSION['seller'] = $row['Seller'];
-                                $_SESSION['service-type'] = $row['ServiceType'];
-                                $_SESSION['price'] = $row['Price'];
-                                ?>
+                    while ($row = mysqli_fetch_assoc($sql)) {
+                    ?>
+                        <a href="./contactSeller.php?seller=<?php echo urlencode($row['Seller']); ?>&category=<?php echo urlencode($row['ServiceType']); ?>&price=<?php echo urlencode($row['Price']); ?>&service=<?php echo urlencode($row['ServiceType']); ?>&image_path=<?php echo urlencode('./' . $row['image_path']); ?>&description=<?php echo urlencode($row['ServiceDescription']); ?>" class="item lazy">
+                            <img src="<?php echo './' . $row['image_path']; ?>" alt="<?php echo $row['Seller']; ?>" class="item-image">
+                            <div class="item-data-container">
+                                <div class="item-data">
+                                    <h5 class="title item-title"><?php echo $row['ServiceType']; ?></h5>
+                                    <span> <?php echo $row['Seller']; ?></span>
+                                    <span> <?php echo $row['ServiceDescription']; ?></span>
+                                    <span> <?php echo $row['Price']; ?></span>
+                                </div>
                             </div>
-                        </div>
-                    </a>
-                <?php
-                }
-                ?>
+                        </a>
+                    <?php
+                    }
+                    ?>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!--Shoe Repair-->
-    <section class="featured-items section" id="shoe-repair">
-        <div class="container">
-            <h2 class="title section-title" data-name="Shoe Repair">Shoe Repair</h2>
-            <div class="featured-items-container d-grid">
-                <?php
+        <!--Haircut-->
+        <section class="featured-items section" id="haircut">
+            <div class="container">
+                <h2 class="title section-title" data-name="Haircut">Haircut</h2>
+                <div class="featured-items-container d-grid">
+                    <?php
 
-                $category = 'Shoe Repair';
+                    $category = 'Haircut';
 
-                $query = "SELECT Services.ServiceType AS ServiceType, Services.Price AS Price,Sellers.BusinessName AS Seller ,Services.image_path AS image_path FROM Sellers,Services,sellerServices WHERE Sellers.SellerID = sellerServices.SellerID AND Services.ServiceID = sellerServices.ServiceID AND Services.ServiceType = '$category';";
+                    $query = "SELECT Services.ServiceType AS ServiceType, Services.Price AS Price,Services.image_path AS image_path, Services.ServiceDescription AS ServiceDescription, Sellers.BusinessName AS Seller FROM Sellers,Services,sellerServices WHERE Sellers.SellerID = sellerServices.SellerID AND Services.ServiceID = sellerServices.ServiceID AND Services.ServiceType = '$category';";
 
-                $sql = mysqli_query($conn, $query);
+                    $sql = mysqli_query($conn, $query);
 
-                while ($row = mysqli_fetch_assoc($sql)) {
-                ?>
-                    <a href="./contactSeller.php" class="item">
-                        <img src="<?php echo './'. $row['image_path']; ?>" alt="<?php echo $row['Seller']; ?>" class="item-image">
-                        <div class="item-data-container">
-                            <div class="item-data">
-                                <h5 class="title item-title"><?php echo $row['ServiceType']; ?></h5>
-                                <span> <?php echo $row['Seller']; ?></span>
-                                <span> <?php echo $row['Price']; ?></span>
-                                <?php
-                                $_SESSION['seller'] = $row['Seller'];
-                                $_SESSION['service-type'] = $row['ServiceType'];
-                                $_SESSION['price'] = $row['Price'];
-                                ?>
+                    while ($row = mysqli_fetch_assoc($sql)) {
+                    ?>
+                        <a href="./contactSeller.php?seller=<?php echo urlencode($row['Seller']); ?>&category=<?php echo urlencode($row['ServiceType']); ?>&price=<?php echo urlencode($row['Price']); ?>&service=<?php echo urlencode($row['ServiceType']); ?>&image_path=<?php echo urlencode('./' . $row['image_path']); ?>&description=<?php echo urlencode($row['ServiceDescription']); ?>" class="item lazy">
+                            <img src="<?php echo './' . $row['image_path']; ?>" alt="<?php echo $row['Seller']; ?>" class="item-image">
+                            <div class="item-data-container">
+                                <div class="item-data">
+                                    <h5 class="title item-title"><?php echo $row['ServiceType']; ?></h5>
+                                    <span> <?php echo $row['Seller']; ?></span>
+                                    <span> <?php echo $row['ServiceDescription']; ?></span>
+                                    <span> <?php echo $row['Price']; ?></span>
+                                </div>
                             </div>
-                        </div>
-                    </a>
-                <?php
-                }
-                ?>
+                        </a>
+                    <?php
+                    }
+                    ?>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!--Carrier Services-->
-    <section class="featured-items section" id="carrier-services">
-        <div class="container">
-            <h2 class="title section-title" data-name="Carrier Services">Carrier Services</h2>
-            <div class="featured-items-container d-grid">
-                <?php
 
-                $category = 'Carrier Services';
+        <!--Electronics Repair-->
+        <section class="featured-items section" id="electronics-repair">
+            <div class="container">
+                <h2 class="title section-title" data-name="Electronics Repair">Electronics Repair</h2>
+                <div class="featured-items-container d-grid">
+                    <?php
 
-                $query = "SELECT Services.ServiceType AS ServiceType, Services.Price AS Price,Services.image_path AS image_path, Sellers.BusinessName AS Seller FROM Sellers,Services,sellerServices WHERE Sellers.SellerID = sellerServices.SellerID AND Services.ServiceID = sellerServices.ServiceID AND Services.ServiceType = '$category';";
+                    $category = 'Electronics Repair';
 
-                $sql = mysqli_query($conn, $query);
+                    $query = "SELECT Services.ServiceType AS ServiceType, Services.Price AS Price,Services.image_path AS image_path, Services.ServiceDescription AS ServiceDescription, Sellers.BusinessName AS Seller FROM Sellers,Services,sellerServices WHERE Sellers.SellerID = sellerServices.SellerID AND Services.ServiceID = sellerServices.ServiceID AND Services.ServiceType = '$category';";
 
-                while ($row = mysqli_fetch_assoc($sql)) {
-                ?>
-                    <a href="./contactSeller.php" class="item">
-                        <img src="<?php echo './'. $row['image_path']; ?>" alt="<?php echo $row['Seller']; ?>" class="item-image">
-                        <div class="item-data-container">
-                            <div class="item-data">
-                                <h5 class="title item-title"><?php echo $row['ServiceType']; ?></h5>
-                                <span> <?php echo $row['Seller']; ?></span>
-                                <span> <?php echo $row['Price']; ?></span>
-                                <?php
-                                $_SESSION['seller'] = $row['Seller'];
-                                $_SESSION['service-type'] = $row['ServiceType'];
-                                $_SESSION['price'] = $row['Price'];
-                                ?>
+                    $sql = mysqli_query($conn, $query);
+
+                    while ($row = mysqli_fetch_assoc($sql)) {
+                    ?>
+                        <a href="./contactSeller.php?seller=<?php echo urlencode($row['Seller']); ?>&category=<?php echo urlencode($row['ServiceType']); ?>&price=<?php echo urlencode($row['Price']); ?>&service=<?php echo urlencode($row['ServiceType']); ?>&image_path=<?php echo urlencode('./' . $row['image_path']); ?>&description=<?php echo urlencode($row['ServiceDescription']); ?>" class="item lazy">
+                            <img src="<?php echo './' . $row['image_path']; ?>" alt="<?php echo $row['Seller']; ?>" class="item-image">
+                            <div class="item-data-container">
+                                <div class="item-data">
+                                    <h5 class="title item-title"><?php echo $row['ServiceType']; ?></h5>
+                                    <span> <?php echo $row['Seller']; ?></span>
+                                    <span> <?php echo $row['ServiceDescription']; ?></span>
+                                    <span> <?php echo $row['Price']; ?></span>
+                                </div>
                             </div>
-                        </div>
-                    </a>
-                <?php
-                }
-                ?>
+                        </a>
+                    <?php
+                    }
+                    ?>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
 
+        <!--Shoe Repair-->
+        <section class="featured-items section" id="shoe-repair">
+            <div class="container">
+                <h2 class="title section-title" data-name="Shoe Repair">Shoe Repair</h2>
+                <div class="featured-items-container d-grid">
+                    <?php
+
+                    $category = 'Shoe Repair';
+
+                    $query = "SELECT Services.ServiceType AS ServiceType, Services.Price AS Price,Sellers.BusinessName AS Seller ,Services.ServiceDescription AS ServiceDescription,Services.image_path AS image_path FROM Sellers,Services,sellerServices WHERE Sellers.SellerID = sellerServices.SellerID AND Services.ServiceID = sellerServices.ServiceID AND Services.ServiceType = '$category';";
+
+                    $sql = mysqli_query($conn, $query);
+
+                    while ($row = mysqli_fetch_assoc($sql)) {
+                    ?>
+                        <a href="./contactSeller.php?seller=<?php echo urlencode($row['Seller']); ?>&category=<?php echo urlencode($row['ServiceType']); ?>&price=<?php echo urlencode($row['Price']); ?>&service=<?php echo urlencode($row['ServiceType']); ?>&image_path=<?php echo urlencode('./' . $row['image_path']); ?>&description=<?php echo urlencode($row['ServiceDescription']); ?>" class="item lazy">
+                            <img src="<?php echo './' . $row['image_path']; ?>" alt="<?php echo $row['Seller']; ?>" class="item-image">
+                            <div class="item-data-container">
+                                <div class="item-data">
+                                    <h5 class="title item-title"><?php echo $row['ServiceType']; ?></h5>
+                                    <span> <?php echo $row['Seller']; ?></span>
+                                    <span> <?php echo $row['ServiceDescription']; ?></span>
+                                    <span> <?php echo $row['Price']; ?></span>
+                                </div>
+                            </div>
+                        </a>
+                    <?php
+                    }
+                    ?>
+                </div>
+            </div>
+        </section>
+
+        <!--Carrier Services-->
+        <section class="featured-items section" id="carrier-services">
+            <div class="container">
+                <h2 class="title section-title" data-name="Carrier Services">Carrier Services</h2>
+                <div class="featured-items-container d-grid">
+                    <?php
+
+                    $category = 'Carrier Services';
+
+                    $query = "SELECT Services.ServiceType AS ServiceType, Services.Price AS Price,Services.image_path AS image_path, Services.ServiceDescription AS ServiceDescription, Sellers.BusinessName AS Seller FROM Sellers,Services,sellerServices WHERE Sellers.SellerID = sellerServices.SellerID AND Services.ServiceID = sellerServices.ServiceID AND Services.ServiceType = '$category';";
+
+                    $sql = mysqli_query($conn, $query);
+
+                    while ($row = mysqli_fetch_assoc($sql)) {
+                    ?>
+                        <a href="./contactSeller.php?seller=<?php echo urlencode($row['Seller']); ?>&category=<?php echo urlencode($row['ServiceType']); ?>&price=<?php echo urlencode($row['Price']); ?>&service=<?php echo urlencode($row['ServiceType']); ?>&image_path=<?php echo urlencode('./' . $row['image_path']); ?>&description=<?php echo urlencode($row['ServiceDescription']); ?>" class="item lazy">
+                            <img src="<?php echo './' . $row['image_path']; ?>" alt="<?php echo $row['Seller']; ?>" class="item-image">
+                            <div class="item-data-container">
+                                <div class="item-data">
+                                    <h5 class="title item-title"><?php echo $row['ServiceType']; ?></h5>
+                                    <span> <?php echo $row['Seller']; ?></span>
+                                    <span> <?php echo $row['ServiceDescription']; ?></span>
+                                    <span> <?php echo $row['Price']; ?></span>
+                                </div>
+                            </div>
+                        </a>
+                    <?php
+                    }
+                    ?>
+                </div>
+            </div>
+        </section>
+    <?php
+    }
+    ?>
 
 
     <!--NewsLetter-->
@@ -744,30 +789,73 @@ include_once 'connect.php';
             <div>
                 <h6 class="title footer-title">Categories</h6>
                 <ul class="list footer-list">
-                    <li class="list-item"><a href="#" class="link">Clothing & Apparels</a></li>
-                    <li class="list-item"><a href="#" class="link">Furniture</a></li>
-                    <li class="list-item"><a href="#" class="link">Gas Services</a></li>
-                    <li class="list-item"><a href="#" class="link">Health Services</a></li>
-                    <li class="list-item"><a href="#" class="link">Beauty & Cosmetics</a></li>
-                    <li class="list-item"><a href="#" class="link">BookShops & Stationaries</a></li>
-                    <li class="list-item"><a href="#" class="link">General Stores</a></li>
-                    <li class="list-item"><a href="#" class="link">HouseHolds</a></li>
-                    <li class="list-item"><a href="#" class="link">Hardware</a></li>
-                    <li class="list-item"><a href="#" class="link">Beddings</a></li>
+                    <li class="list-item"><a href="./post.php#clothing&apparels" class="link">Clothing & Apparels</a>
+                    </li>
+                    <li class="list-item"><a href="./post.php#furniture" class="link">Furniture</a></li>
+                    <li class="list-item"><a href="./post.php#gas-services" class="link">Gas Services</a></li>
+                    <li class="list-item"><a href="./post.php#health" class="link">Health Services</a></li>
+                    <li class="list-item"><a href="./post.php#beauty&cosmetic" class="link">Beauty & Cosmetics</a></li>
+                    <li class="list-item"><a href="./post.php#bookshop&stationary" class="link">BookShops &
+                            Stationaries</a></li>
+                    <li class="list-item"><a href="./post.php#general-stores" class="link">General Stores</a></li>
+                    <li class="list-item"><a href="./post.php#households" class="link">HouseHolds</a></li>
+                    <li class="list-item"><a href="./post.php#hardware" class="link">Hardware</a></li>
+                    <li class="list-item"><a href="./post.php#beddings" class="link">Beddings</a></li>
+                    <li class="list-item"><a href="./post.php#electronics" class="link">Electronics</a></li>
+                    <li class="list-item"><a href="./post.php#hairdressing" class="link">Hairdressing</a></li>
+                    <li class="list-item"><a href="./post.php#haircut" class="link">Beddings</a></li>
+                    <li class="list-item"><a href="./post.php#electronics-repair" class="link">Electronics Repair</a>
+                    </li>
+                    <li class="list-item"><a href="./post.php#shoe-repair" class="link">Shoe Repair</a></li>
+                    <li class="list-item"><a href="./post.php#carrier-services" class="link">Carrier Services</a></li>
                 </ul>
             </div>
 
             <div>
-                <h6 class="title footer-title">Our Contacts</h6>
+                <h6 class="title footer-title" id="contact-us">Our Contacts</h6>
                 <ul class="list footer-list">
                     <li class="list-item">Call: <a href="https://tel: +254797630228" class="link">0797630228</a></li>
-                    <li class="list-item">WhatsApp: <a href="https://wa.me/+254797630228" class="link">AlphaTech Solutions</a></li>
+                    <li class="list-item">WhatsApp: <a href="https://wa.me/+254797630228" class="link">AlphaTech
+                            Solutions</a></li>
                     <li class="list-item"> Email : <a href="mailto:sangera@kabarak.ac.ke?bcc=lukelasharon02@gmail.com,maxwellwafula@gmail.com,sharif@kabarak.ac.ke" class="link">info@kabub2b.com</a></li>
                 </ul>
             </div>
         </div>
     </footer>
 </body>
-<script src="./index.js"></script>
+<script>
+    function showSideBar() {
+        document.querySelector('.hidden').style.display = 'block';
+        document.querySelector('.sidebar-open-btn').style.display = 'none';
+    }
+
+    function hideSideBar() {
+        document.querySelector('.hidden').style.display = 'none';
+        document.querySelector('.sidebar-open-btn').style.display = 'block';
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        // Get all elements with the "lazy" class
+        var lazyImages = document.querySelectorAll('.lazy');
+
+        // Create an Intersection Observer
+        var observer = new IntersectionObserver(function(entries, observer) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                    // Load the image by setting the "src" attribute
+                    entry.target.src = entry.target.dataset.src;
+
+                    // Unobserve the element to stop observing once loaded
+                    observer.unobserve(entry.target);
+                }
+            });
+        });
+
+        // Start observing lazy images
+        lazyImages.forEach(function(image) {
+            observer.observe(image);
+        });
+    });
+</script>
 
 </html>

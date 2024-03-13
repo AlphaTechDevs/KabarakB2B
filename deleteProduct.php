@@ -6,7 +6,7 @@ session_start();
 
 include_once 'connect.php';
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+if (isset($_POST['del-product'])) {
     // Retrieve the product ID from the form
     $productID = $_POST["product_id"];
 
@@ -25,6 +25,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $popupClass = "error-popup";
     }
 }
+if (isset($_POST['del-service'])) {
+    // Retrieve the product ID from the form
+    $serviceID = $_POST["service_id"];
+
+    // Add your SQL query to delete the product from the database
+    $deleteQuery = "DELETE FROM Services WHERE ServiceID = $serviceID";
+
+    // Execute the query
+    $result = mysqli_query($conn, $deleteQuery);
+
+    // Check if the deletion was successful
+    if ($result) {
+        $message = "Service deleted successfully!";
+        $popupClass = "success-popup";
+    } else {
+        $message = "Error deleting service: " . mysqli_error($conn);
+        $popupClass = "error-popup";
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -36,6 +55,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <!--Global Styles of the page-->
     <link rel="stylesheet" href="style.css">
+
+    <!--Responsiveness of the page-->
+    <link rel="stylesheet" href="responsiveness.css">
 
     <!--==Icons on the page==-->
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.min.css" rel="stylesheet">
@@ -92,7 +114,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             border-top: 1px solid var(--dark-color);
             width: 100%;
         }
-
+        .buttons{
+                top: 0;
+                font-size: 1em;
+                left: 0;
+                border: none;
+                width: 2rem;
+                height: 2rem;
+                background: transparent;
+                margin-right: 1rem;
+            }
+            .menu-open-btn{
+                display: none;
+            }
+            .sidebar-close-btn{
+                display: none;
+            }
         .sidebar-list .first-item {
             border-top: none;
         }
@@ -200,14 +237,179 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             padding: 10px;
             cursor: pointer;
         }
+        @media screen and (max-width: 1100px) {
+            body {
+                padding: 0;
+                margin: 0;
+                box-sizing: border-box;
+            }
+            .logo-items{
+                display: flex;
+                flex-direction: row;
+                gap: var(--gap);
+            }
+            .sidebar {
+                top: 10%;
+                width: 40%;
+                height: 90vh;
+                background: var(--secondary-background);
+                position: fixed;
+                left: 0;
+                display: none;
+                overflow-x: hidden;
+                padding-top: 1rem;
+                overflow-y: scroll;
+                z-index: 1000;
+            }
+
+            .content {
+                margin-top: 0;
+                margin-left: 0;
+                width: 100%;
+                padding: 0;
+                transition: none;
+            }
+
+            .tables-container {
+
+                width: 100%;
+            }
+
+            table {
+                max-width: 100%;
+            }
+
+            .sidebar-open-btn {
+                display: none;
+            }
+            
+            .menu-open-btn {
+                display: block;
+            }
+
+            .sidebar-close-btn {
+                display: block;
+                right: 0;
+                top: 0;
+            }
+
+            .sidebar-list .menu-item {
+                gap: .5rem;
+                font-size: var(--font-size-sm);
+            }
+        }
+
+        @media screen and (max-width: 950px) {
+            .dashboard {
+                margin: auto;
+
+            }
+
+            .dashboard-content-container {
+                gap: var(--gap-md);
+            }
+
+            .tables-container {
+                width: 100%;
+                margin: 3rem 0;
+                padding: 0;
+            }
+
+            table {
+                width: 100%;
+                table-layout: fixed;
+                /* Fix the table layout */
+            }
+
+            th,
+            td {
+                word-wrap: break-word;
+                white-space: wrap;
+            }
+            .popup {
+            top: 0;
+            left: 0;
+            margin: 25% 10% ;
+            width: 80%;
+        }
+        }
+
+        @media screen and (max-width: 768px) {
+            .dashboard-content-container {
+                grid-template-columns: repeat(2, 1fr);
+                gap: var(--gap-vxsm);
+            }
+
+            th {
+                font-size: var(--font-size-small);
+                padding: .25rem .5rem;
+            }
+
+            td {
+                font-size: var(--font-size-xsmall);
+                padding: .1rem .75rem;
+            }
+        }
+
+        @media screen and (max-width: 615px) {
+            .header {
+                height: 4rem;
+            }
+
+            .welcome-message {
+                margin: 30px 0 15px 0;
+            }
+
+            .welcome-message .title {
+                font-size: var(--font-size-m);
+            }
+
+            .box .text {
+                font-size: 16px;
+            }
+
+            .box .number {
+                font-size: 30px;
+            }
+
+            .tables-container {
+                margin-top: 3rem;
+                max-width: 100%;
+            }
+
+            table {
+                margin-top: 1.5rem;
+                width: 100%;
+                max-width: 100%;
+            }
+
+        }
+
+        @media screen and (max-width: 525px) {
+            .dashboard-content-container {
+                grid-template-columns: repeat(1, 1fr);
+                gap: var(--gap);
+            }
+
+            th {
+                font-size: var(--font-size-xsmall);
+                padding: .1rem 0;
+            }
+
+            td {
+                font-size: 10px;
+                padding: .05rem 0;
+            }
+        }
     </style>
 </head>
 
 <body>
     <header class="header" id="header">
-        <div class="logo-items">
-            <button class="sidebar-open-btn" onclick="toggleSidebar()">
-                <i class="ri-menu-3-line"></i>
+    <div class="logo-items">
+            <button class="buttons">
+                <i class="ri-menu-3-line sidebar-open-btn" onclick="toggleSidebar()"></i>
+                <i class="ri-menu-3-line menu-open-btn" onclick="showSideBar()"></i>
             </button>
             <div class="logo">
                 <a href="./adminDashboard.php" class="link">
@@ -218,6 +420,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </header>
 
     <div id="sidebar" class="sidebar">
+        <button class="sidebar-close-btn" id="menu-close-btn" onclick="hideSideBar()">
+            <i class="ri-close-line"></i>
+        </button>
         <ul class="list sidebar-list">
             <li class="menu-item first-item">
                 <a href="./adminDashboard.php" class="link"><i class="#"></i>Site Home</a>
@@ -310,7 +515,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 <td>
                                     <form method="post" action="deleteProduct.php">
                                         <input type="hidden" name="product_id" value="<?php echo $row['ProductID']; ?>">
-                                        <button type="submit" style="background-color: red; color: var(--dark-color); padding: .5rem 1rem;">Del</button>
+                                        <button type="submit" name="del-product" style="background-color: red; color: var(--dark-color); padding: .5rem 1rem;">Del</button>
                                     </form>
                                 </td>
                             </tr>
@@ -361,8 +566,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 <td> <?php echo $row['Seller']; ?> </td>
                                 <td>
                                     <form method="post" action="deleteProduct.php">
-                                        <input type="hidden" name="product_id" value="<?php echo $row['ServiceID']; ?>">
-                                        <button type="submit" style="background-color: red; color: var(--dark-color); padding: .5rem 1rem;">Del</button>
+                                        <input type="hidden" name="service_id" value="<?php echo $row['ServiceID']; ?>">
+                                        <button type="submit" name="del-service" style="background-color: red; color: var(--dark-color); padding: .5rem 1rem;">Del</button>
                                     </form>
                                 </td>
                             </tr>

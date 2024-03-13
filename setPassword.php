@@ -91,6 +91,9 @@ ob_end_flush();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KabarakB2B | Set Password</title>
 
+    <!--Responsiveness of the page-->
+    <link rel="stylesheet" href="responsiveness.css">
+
     <link rel="stylesheet" href="./style.css">
 
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.min.css" rel="stylesheet">
@@ -264,7 +267,12 @@ ob_end_flush();
                 width: 100%;
                 height: 95%;
             }
-
+            .popup {
+            top: 0;
+            left: 0;
+            margin: 25% 10% ;
+            width: 80%;
+        }
             .inputs {
                 margin: .5rem 1rem;
             }

@@ -8,3 +8,12 @@ function toggleSidebar() {
     // Toggle the 'expanded' class on the content
     content.classList.toggle('expanded');
 }
+function showSideBar() {
+    document.querySelector('.sidebar').style.display = 'block';
+    document.querySelector('.menu-open-btn').style.display = 'none';
+}
+
+function hideSideBar() {
+    document.querySelector('.sidebar').style.display = 'none';
+    document.querySelector('.menu-open-btn').style.display = 'block';
+}
