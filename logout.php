@@ -1,7 +1,16 @@
 <?php
 session_start();
 
-session_destroy();
-header('Location: login.html');
-exit();
+$operator = $_SESSION['operator'];
+
+if ($operator == "admin") {
+    session_destroy();
+    header('Location: login.html');
+    exit();
+} else {
+    session_destroy();
+    header('Location: index.html');
+    exit();
+}
+
 ?>

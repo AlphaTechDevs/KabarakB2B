@@ -45,19 +45,34 @@
                     <li class="menu-item"><a href="./login.html" class="link item-hidden">Login</a></li>
                     <li class="menu-item"><a href="./signup.php" class="link item-hidden">Register</a></li>
 
-                    <li class="menu-item"><a href="./post.php#clothing&apparels" class="link">Clothing & Apparels</a></li>
-                    <li class="menu-item"><a href="./post.php#furniture" class="link">Furniture</a></li>
-                    <li class="menu-item"><a href="./post.php#gas-services" class="link">Gas Services</a></li>
-                    <li class="menu-item"><a href="./post.php#health" class="link">Health Services</a></li>
-                    <li class="menu-item"><a href="./post.php#beauty&cosmetics" class="link">Beauty & Cosmetics</a></li>
-                    <li class="menu-item"><a href="./post.php#bookshop&stationary" class="link">BookShops & Stationaries</a></li>
-                    <li class="menu-item"><a href="./post.php#general-stores" class="link">General Stores</a></li>
-                    <li class="menu-item"><a href="./post.php#households" class="link">HouseHolds</a></li>
-                    <li class="menu-item"><a href="./post.php#hardware" class="link">Hardware</a></li>
-                    <li class="menu-item"><a href="./post.php#electronics" class="link">Electronics</a></li>
-                    <li class="menu-item"><a href="./post.php#beddings" class="link">Beddings</a></li>
-                    <li class="menu-item"><a href="./post.php#hairdressing" class="link">Hairdressing</a></li>
-                    <li class="menu-item"><a href="./post.php#haircut" class="link">Haircut</a></li>
+                    <li class="menu-item"><a href="./post.php?%23clothing&apparels&amp;operator=buyer"
+                            class="link">Clothing & Apparels</a></li>
+                    <li class="menu-item"><a href="./post.php?%23furniture&amp;operator=buyer"
+                            class="link">Furniture</a>
+                    </li>
+                    <li class="menu-item"><a href="./post.php?%23gas-services&amp;operator=buyer" class="link">Gas
+                            Services</a></li>
+                    <li class="menu-item"><a href="./post.php?%23health&amp;operator=buyer" class="link">Health
+                            Services</a></li>
+                    <li class="menu-item"><a href="./post.php?%23beauty&cosmetics&amp;operator=buyer"
+                            class="link">Beauty
+                            & Cosmetics</a></li>
+                    <li class="menu-item"><a href="./post.php?%23bookshop&stationary&amp;operator=buyer"
+                            class="link">BookShops & Stationaries</a></li>
+                    <li class="menu-item"><a href="./post.php?%23general-stores&amp;operator=buyer" class="link">General
+                            Stores</a></li>
+                    <li class="menu-item"><a href="./post.php?%23households&amp;operator=buyer"
+                            class="link">HouseHolds</a></li>
+                    <li class="menu-item"><a href="./post.php?%23hardware&amp;operator=buyer" class="link">Hardware</a>
+                    </li>
+                    <li class="menu-item"><a href="./post.php?%23electronics&amp;operator=buyer"
+                            class="link">Electronics</a></li>
+                    <li class="menu-item"><a href="./post.php?%23beddings&amp;operator=buyer" class="link">Beddings</a>
+                    </li>
+                    <li class="menu-item"><a href="./post.php?%23hairdressing&amp;operator=buyer"
+                            class="link">Hairdressing</a></li>
+                    <li class="menu-item"><a href="./post.php?%23haircut&amp;operator=buyer" class="link">Haircut</a>
+                    </li>
 
                 </ul>
             </div>
@@ -67,8 +82,9 @@
     <div class="search-form-container container" id="search-form-container">
         <div class="container-inner">
             <form action="./post.php" class="form">
+                <input type="hidden" name="operator" value="buyer">
                 <input type="search" name="keyword" id="keyword" class="form-input"
-                    placeholder="What are you looking for?">
+                    placeholder="What are you looking for">
                 <button class="btn form-btn" type="submit">
                     <i class="ri-search-line"></i>
                 </button>
@@ -98,7 +114,7 @@
         <div class="container">
             <h2 class="title section-title" data-name="Products">Products</h2>
             <div class="featured-items-container d-grid">
-                <a href="post.php#gas-services" class="item">
+                <a href="post.php?%23gas-services&amp;operator=buyer" class="item">
                     <img src="./images/gas-services-tag.jpg" alt="Gas Services" class="item-image">
                     <div class="item-data-container">
                         <div class="item-data">
@@ -108,7 +124,7 @@
                     </div>
                 </a>
 
-                <a href="post.php#clothing&apparels" class="item">
+                <a href="post.php?%23clothing&apparels&amp;operator=buyer" class="item">
                     <img src="./images/clothes-tag.jpg" alt="Clothes" class="item-image">
                     <div class="item-data-container">
                         <div class="item-data">
@@ -118,7 +134,7 @@
                     </div>
                 </a>
 
-                <a href="post.php#beauty&cosmetics" class="item">
+                <a href="post.php?%23beauty&cosmetics&amp;operator=buyer" class="item">
                     <img src="./images/beauty-tag.jpg" alt="Beauty and Cosmetics" class="item-image">
                     <div class="item-data-container">
                         <div class="item-data">
@@ -128,7 +144,7 @@
                     </div>
                 </a>
 
-                <a href="post.php#beddings" class="item">
+                <a href="post.php?%23beddings&amp;operator=buyer" class="item">
                     <img src="./images/beddings.jpg" alt="Beddings" class="item-image">
                     <div class="item-data-container">
                         <div class="item-data">
@@ -138,8 +154,8 @@
                     </div>
                 </a>
 
-                <a href="post.php#furniture" class="item">
-                    <img src="./images/furniture-tag.jpg" alt="Furnitures"item-image">
+                <a href="post.php?%23furniture&amp;operator=buyer" class="item">
+                    <img src="./images/furniture-tag.jpg" alt="Furnitures" item-image">
                     <div class="item-data-container">
                         <div class="item-data">
                             <h5 class="title item-title">Furnitures</h5>
@@ -148,7 +164,7 @@
                     </div>
                 </a>
 
-                <a href="post.php#hardware" class="item">
+                <a href="post.php?%23hardware&amp;operator=buyer" class="item">
                     <img src="./images/hardware-tag.jpg" alt="Hardware" class="item-image">
                     <div class="item-data-container">
                         <div class="item-data">
@@ -158,7 +174,7 @@
                     </div>
                 </a>
 
-                <a href="post.php#households" class="item">
+                <a href="post.php?%23households&amp;operator=buyer" class="item">
                     <img src="./images/households-tag.jpg" alt="House Holds" class="item-image">
                     <div class="item-data-container">
                         <div class="item-data">
@@ -168,7 +184,7 @@
                     </div>
                 </a>
 
-                <a href="post.php#bookshop&stationary" class="item">
+                <a href="post.php?%23bookshop&stationary&amp;operator=buyer" class="item">
                     <img src="./images/bookshop-tag.jpg" alt="Books & Stationaries" class="item-image">
                     <div class="item-data-container">
                         <div class="item-data">
@@ -178,7 +194,7 @@
                     </div>
                 </a>
 
-                <a href="post.php#general-stores" class="item">
+                <a href="post.php?%23general-stores&amp;operator=buyer" class="item">
                     <img src="./images/general-stores-tag.jpg" alt="General Stores" class="item-image">
                     <div class="item-data-container">
                         <div class="item-data">
@@ -188,7 +204,7 @@
                     </div>
                 </a>
 
-                <a href="post.php#electronics" class="item">
+                <a href="post.php?%23electronics&amp;operator=buyer" class="item">
                     <img src="./images/electronics-tag.jpg" alt="Electronics" class="item-image">
                     <div class="item-data-container">
                         <div class="item-data">
@@ -207,7 +223,7 @@
         <div class="container">
             <h2 class="title section-title" data-name="Services">Services</h2>
             <div class="featured-items-container d-grid">
-                <a href="post.php#health" class="item">
+                <a href="post.php?%23health" class="item">
                     <img src="./images/health-tag.jpg" alt="Health" class="item-image">
                     <div class="item-data-container">
                         <div class="item-data">
@@ -217,7 +233,7 @@
                     </div>
                 </a>
 
-                <a href="post.php#hairdressing" class="item">
+                <a href="post.php?%23hairdressing" class="item">
                     <img src="./images/hairdressing-tag.jpg" alt="Hairdressing" class="item-image">
                     <div class="item-data-container">
                         <div class="item-data">
@@ -227,7 +243,7 @@
                     </div>
                 </a>
 
-                <a href="post.php#haircut" class="item">
+                <a href="post.php?%23haircut" class="item">
                     <img src="./images/haircut-tag.jpg" alt="Haircut" class="item-image">
                     <div class="item-data-container">
                         <div class="item-data">
@@ -237,7 +253,7 @@
                     </div>
                 </a>
 
-                <a href="post.php#electronics-repair" class="item">
+                <a href="post.php?%23electronics-repair" class="item">
                     <img src="./images/electronic-repair-tag.jpg" alt="Electronics Repair" class="item-image">
                     <div class="item-data-container">
                         <div class="item-data">
@@ -248,7 +264,7 @@
                 </a>
 
 
-                <a href="post.php#shoe-repair" class="item">
+                <a href="post.php?%23shoe-repair" class="item">
                     <img src="./images/shoe-repair-tag.jpg" alt="Shoe Repair" class="item-image">
                     <div class="item-data-container">
                         <div class="item-data">
@@ -258,7 +274,7 @@
                     </div>
                 </a>
 
-                <a href="post.php#carrier-services" class="item">
+                <a href="post.php?%23carrier-services" class="item">
                     <img src="./images/carrier-services-tag.jpg" alt="Carrier Services" class="item-image">
                     <div class="item-data-container">
                         <div class="item-data">
@@ -309,6 +325,18 @@
                 <div class="org-description">
                     <p>The top leading Affiliates located at Kabarak University Main Campus.</p>
                     <p>We deal with marketing businesses at a commission paid per month.</p>
+                    <h6 class="title footer-title" id="contact-us">Our Contacts</h6>
+                    <ul class="list footer-list">
+                        <li class="list-item">Call: <a href="https://tel: +254104945962" class="link">0104945962</a>
+                        </li>
+                        <li class="list-item">SMS: <a href="https://sms: +254769320092" class="link">0769320092</a>
+                        </li>
+                        <li class="list-item">WhatsApp: <a href="https://wa.me/+25479463900" class="link">AlphaTech
+                                Solutions</a></li>
+                        <li class="list-item"> Email : <a
+                                href="mailto:sangera@kabarak.ac.ke?bcc=lukelasharon02@gmail.com,maxwellwafula884@gmail.com,sharif@kabarak.ac.ke"
+                                class="link">info@kabub2b.com</a></li>
+                    </ul>
                     <ul class="list social-media">
                         <li class="list-item">
                             <a href="" class="link"><i class="ri-facebook-line"></i></a>
@@ -326,35 +354,54 @@
             </div>
 
             <div>
-                <h6 class="title footer-title">Categories</h6>
+                <h6 class="title footer-title">Products</h6>
                 <ul class="list footer-list">
-                    <li class="list-item"><a href="./post.php#clothing&apparels" class="link">Clothing & Apparels</a></li>
-                    <li class="list-item"><a href="./post.php#furniture" class="link">Furniture</a></li>
-                    <li class="list-item"><a href="./post.php#gas-services" class="link">Gas Services</a></li>
-                    <li class="list-item"><a href="./post.php#health" class="link">Health Services</a></li>
-                    <li class="list-item"><a href="./post.php#beauty&cosmetic" class="link">Beauty & Cosmetics</a></li>
-                    <li class="list-item"><a href="./post.php#bookshop&stationary" class="link">BookShops & Stationaries</a></li>
-                    <li class="list-item"><a href="./post.php#general-stores" class="link">General Stores</a></li>
-                    <li class="list-item"><a href="./post.php#households" class="link">HouseHolds</a></li>
-                    <li class="list-item"><a href="./post.php#hardware" class="link">Hardware</a></li>
-                    <li class="list-item"><a href="./post.php#beddings" class="link">Beddings</a></li>
-                    <li class="list-item"><a href="./post.php#electronics" class="link">Electronics</a></li>
-                    <li class="list-item"><a href="./post.php#hairdressing" class="link">Hairdressing</a></li>
-                    <li class="list-item"><a href="./post.php#haircut" class="link">Beddings</a></li>
-                    <li class="list-item"><a href="./post.php#electronics-repair" class="link">Electronics Repair</a></li>
-                    <li class="list-item"><a href="./post.php#shoe-repair" class="link">Shoe Repair</a></li>
-                    <li class="list-item"><a href="./post.php#carrier-services" class="link">Carrier Services</a></li>
+                    <li class="list-item"><a href="./post.php?%23clothing&apparels&amp;operator=buyer"
+                            class="link">Clothing & Apparels</a>
+                    </li>
+                    <li class="list-item"><a href="./post.php?%23furniture&amp;operator=buyer"
+                            class="link">Furniture</a></li>
+                    <li class="list-item"><a href="./post.php?%23gas-services&amp;operator=buyer" class="link">Gas
+                            Cylinders</a></li>
+                    <li class="list-item"><a href="./post.php?%23health&amp;operator=buyer" class="link">Health
+                            Services</a></li>
+                    <li class="list-item"><a href="./post.php?%23beauty&cosmetic&amp;operator=buyer" class="link">Beauty
+                            & Cosmetics</a></li>
+                    <li class="list-item"><a href="./post.php?%23bookshop&stationary&amp;operator=buyer"
+                            class="link">BookShops &
+                            Stationaries</a></li>
+                    <li class="list-item"><a href="./post.php?%23general-stores&amp;operator=buyer" class="link">General
+                            Stores</a></li>
+                    <li class="list-item"><a href="./post.php?%23households&amp;operator=buyer"
+                            class="link">HouseHolds</a></li>
+                    <li class="list-item"><a href="./post.php?%23hardware&amp;operator=buyer" class="link">Hardware</a>
+                    </li>
+                    <li class="list-item"><a href="./post.php?%23beddings&amp;operator=buyer" class="link">Beddings</a>
+                    </li>
+                    <li class="list-item"><a href="./post.php?%23electronics&amp;operator=buyer"
+                            class="link">Electronics</a></li>
                 </ul>
             </div>
 
             <div>
-                <h6 class="title footer-title" id="contact-us">Our Contacts</h6>
+                <h6 class="title footer-title">Services</h6>
                 <ul class="list footer-list">
-                    <li class="list-item">Call: <a href="https://tel: +254797630228" class="link">0797630228</a></li>
-                    <li class="list-item">WhatsApp: <a href="https://wa.me/+254797630228" class="link">AlphaTech Solutions</a></li>
-                    <li class="list-item"> Email : <a
-                            href="mailto:sangera@kabarak.ac.ke?bcc=lukelasharon02@gmail.com,maxwellwafula@gmail.com,sharif@kabarak.ac.ke"
-                            class="link">info@kabub2b.com</a></li>
+                    <li class="list-item"><a href="./post.php?%23health&amp;operator=buyer" class="link">Health</a></li>
+                    <li class="list-item"><a href="./post.php?%23haircut&amp;operator=buyer" class="link">Haircut</a>
+                    </li>
+                    <li class="list-item"><a href="./post.php?%23hairdressing&amp;operator=buyer"
+                            class="link">Hairdressing</a></li>
+                    <li class="list-item"><a href="./post.php?%23gas-services&amp;operator=buyer" class="link">Gas
+                            Refill</a></li>
+                    <li class="list-item"><a href="./post.php?%23haircut&amp;operator=buyer" class="link">Beddings</a>
+                    </li>
+                    <li class="list-item"><a href="./post.php?%23electronics-repair&amp;operator=buyer"
+                            class="link">Electronics Repair</a>
+                    </li>
+                    <li class="list-item"><a href="./post.php?%23shoe-repair&amp;operator=buyer" class="link">Shoe
+                            Repair</a></li>
+                    <li class="list-item"><a href="./post.php?%23carrier-services&amp;operator=buyer"
+                            class="link">Carrier Services</a></li>
                 </ul>
             </div>
         </div>

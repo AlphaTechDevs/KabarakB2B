@@ -146,7 +146,7 @@ ob_end_flush();
             padding-block: .5rem;
             padding-left: .5rem;
             font-size: var(--font-size-small);
-            background: transparent;
+            background-color: transparent;
             transition: transform border .4s;
         }
 
@@ -156,8 +156,11 @@ ob_end_flush();
 
         .select {
             width: 40%;
+            color: var(--dark-color);
         }
-
+        .select option{
+            background-color: transparent;
+        }
         .btn {
             padding: .5rem 2rem;
             float: right;

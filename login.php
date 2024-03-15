@@ -13,6 +13,29 @@ $passphrase = $telephone = '';
 // Declare arrays that will store all the user's telephone numbers from the database
 $existingAdminsTelephones = $existingSellersTelephones = [];
 
+if (isset($_COOKIE['user']) && isset($_COOKIE['password'])) {
+    $cookie_user = $_COOKIE['user'];
+    $cookie_password = $_COOKIE['password'];
+
+    // Check if the user exists in your database
+    $query = "SELECT Passphrase FROM MySecurity WHERE Telephone = '$cookie_user';";
+    $result = mysqli_query($conn, $query);
+
+    if (mysqli_num_rows($result) > 0) {
+        $row = mysqli_fetch_assoc($result);
+        $hashed_password = $row['Passphrase'];
+
+        // Verify the password
+        if (password_verify($cookie_password, $hashed_password)) {
+            // Set the session and redirect to appropriate dashboard
+            $_SESSION['user'] = $cookie_user;
+
+            // Redirect to the appropriate dashboard
+            header('Location: sellerDashboard.php');
+            exit();
+        }
+    }
+}
 if (isset($_POST['login'])) {
     //Pick the data from HTML
     $passphrase = $_POST['Passphrase'];
@@ -55,8 +78,10 @@ if (isset($_POST['login'])) {
 
             if (password_verify($passphrase, $hashed_password)) {
                 $user = $telephone;
+                $operator = "seller";
 
                 $_SESSION['user'] = $user; //save for future use
+                $_SESSION['operator'] = $operator;
 
                 // Check if the "Remember me" checkbox is checked
                 if (isset($_POST["remember"]) && $_POST["remember"] == "1") {
@@ -94,8 +119,11 @@ if (isset($_POST['login'])) {
 
             if (password_verify($passphrase, $hashed_password)) {
                 $user = $telephone;
+                $operator = "admin";
 
                 $_SESSION['user'] = $user; //save for future use
+                $_SESSION['operator'] = $operator;
+
 
                 // Check if the "Remember me" checkbox is checked
                 if (isset($_POST["remember"]) && $_POST["remember"] == "1") {

@@ -2,9 +2,17 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
+session_start();
 // Set cache headers for 1 week
 header("Cache-Control: max-age=604800, public");
-session_start();
+
+if (isset($_GET['operator'])) {
+    $operator = $_GET['operator'];
+}else{
+    $operator = urldecode($_GET['operator']);
+}
+
+$_SESSION['operator'] = $operator ?? 'buyer';#if the variable operator is null the session variable will be given the value buyer
 
 include_once 'connect.php';
 
@@ -42,19 +50,45 @@ include_once 'connect.php';
                 <i class="ri-menu-3-line"></i>
             </button>
             <div class="logo">
-                <a href="./index.html" class="link">
-                    <h3 class="logo-name">Kabarak<span class="tm">B2B</span></h3>
-                </a>
+                <?php
+                if ($operator === "seller") {
+                ?>
+                    <a href="<?php echo './' . $operator . 'Dashboard.php' ?>" class="link">
+                        <h3 class="logo-name">Kabarak<span class="tm">B2B</span></h3>
+                    </a>
+                <?php
+                } else {
+                ?>
+                    <a href="./index.html" class="link">
+                        <h3 class="logo-name">Kabarak<span class="tm">B2B</span></h3>
+                    </a>
+                <?php
+                }
+                ?>
             </div>
         </div>
         <nav class="navbar" id="navbar1">
             <div class="menu">
+
                 <ul class="list">
-                    <li class="menu-item"><a href="./index.html#" class="link">Home</a></li>
-                    <li class="menu-item"><a href="./index.html#contact-us" class="link">Contact us</a></li>
-                    <li class="menu-item"><a href="./index.html#about-us" class="link">About us</a></li>
-                    <li class="menu-item"><a href="./login.html" class="link">Login</a></li>
-                    <li class="menu-item"><a href="./signup.php" class="link">Register</a></li>
+                    <?php
+                    if ($operator === "seller") {
+                    ?>
+                        <li class="menu-item"><a href="./index.html#" class="link">Home</a></li>
+                        <li class="menu-item"><a href="./index.html#contact-us" class="link">Contact us</a></li>
+                        <li class="menu-item"><a href="./index.html#about-us" class="link">About us</a></li>
+                        <li class="menu-item"><a href="./logout.php" class="link">Logout</a></li>
+                    <?php
+                    } else {
+                    ?>
+                        <li class="menu-item"><a href="./index.html#" class="link">Home</a></li>
+                        <li class="menu-item"><a href="./index.html#contact-us" class="link">Contact us</a></li>
+                        <li class="menu-item"><a href="./index.html#about-us" class="link">About us</a></li>
+                        <li class="menu-item"><a href="./login.html" class="link">Login</a></li>
+                        <li class="menu-item"><a href="./signup.php" class="link">Register</a></li>
+                    <?php
+                    }
+                    ?>
                 </ul>
             </div>
         </nav>
@@ -68,9 +102,6 @@ include_once 'connect.php';
                     <li class="menu-item"><a href="./index.html" class="link item-hidden">Home</a></li>
                     <li class="menu-item"><a href="./index.html#contact-us" class="link item-hidden">Contact us</a></li>
                     <li class="menu-item"><a href="./index.html#about-us" class="link item-hidden">About us</a></li>
-                    <li class="menu-item"><a href="./login.html" class="link item-hidden">Login</a></li>
-                    <li class="menu-item"><a href="./signup.php" class="link item-hidden">Register</a></li>
-
                     <li class="menu-item"><a href="./post.php#clothing&apparels" class="link">Clothing & Apparels</a>
                     </li>
                     <li class="menu-item"><a href="./post.php#furniture" class="link">Furniture</a></li>
@@ -86,6 +117,24 @@ include_once 'connect.php';
                     <li class="menu-item"><a href="./post.php#beddings" class="link">Beddings</a></li>
                     <li class="menu-item"><a href="./post.php#hairdressing" class="link">Hairdressing</a></li>
                     <li class="menu-item"><a href="./post.php#haircut" class="link">Haircut</a></li>
+                    <?php
+                    if ($operator === "seller") {
+                    ?>
+                        <li class="menu-item">
+                            <a href="./my_profile.php" class="link"><i class="#"></i>My Profile</a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="./setPassword.php" class="link"><i class="#"></i>Update Password</a>
+                        </li>
+                        <li class="menu-item"><a href="./logout.php" class="link item-hidden">Logout</a></li>
+                    <?php
+                    } else {
+                    ?>
+                        <li class="menu-item"><a href="./login.html" class="link item-hidden">Login</a></li>
+                        <li class="menu-item"><a href="./signup.php" class="link item-hidden">Register</a></li>
+                    <?php
+                    }
+                    ?>
                 </ul>
             </div>
         </nav>
@@ -93,7 +142,8 @@ include_once 'connect.php';
     <!--Search form-->
     <div class="search-form-container container" id="search-form-container">
         <div class="container-inner">
-            <form action="" class="form">
+            <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" class="form">
+                <input type="hidden" name="operator" value="<?php echo htmlspecialchars($operator); ?>">
                 <input type="search" name="keyword" id="keyword" class="form-input" placeholder="What are you looking for?">
                 <button class="btn form-btn" type="submit">
                     <i class="ri-search-line"></i>
@@ -104,14 +154,15 @@ include_once 'connect.php';
 
     <?php
     if (isset($_GET['keyword'])) {
-        $keyword = mysqli_real_escape_string($conn, $_GET['keyword']);
 
+        $keyword = mysqli_real_escape_string($conn, $_GET['keyword']);
+        $operator = $_GET['operator'];
         // Product search query
-        $productQuery = "SELECT Products.ProductName, Products.Price, Products.Brand, Products.image_path, Products.ProductDescription, Products.Category, Sellers.BusinessName AS Seller FROM Sellers INNER JOIN sellerProducts ON Sellers.SellerID = sellerProducts.SellerID INNER JOIN Products ON Products.ProductID = sellerProducts.ProductID WHERE (Products.Category LIKE '%$keyword%' OR Products.ProductName LIKE '%$keyword%' OR Sellers.BusinessName LIKE '%$keyword%');";
+        $productQuery = "SELECT * FROM sellersProducts WHERE (Category LIKE '%$keyword%' OR ProductName LIKE '%$keyword%' OR Seller LIKE '%$keyword%');";
 
 
         // Service search query
-        $serviceQuery = "SELECT Services.ServiceType AS ServiceType, Services.Price AS Price, Services.image_path AS image_path,Services.ServiceDescription AS ServiceDescription, Sellers.BusinessName AS Seller FROM Sellers INNER JOIN sellerServices ON Sellers.SellerID = sellerServices.SellerID INNER JOIN Services ON Services.ServiceID = sellerServices.ServiceID WHERE (Services.ServiceType LIKE '%$keyword%' OR Sellers.BusinessName LIKE '%$keyword%');";
+        $serviceQuery = "SELECT * FROM sellersServices WHERE (ServiceType LIKE '%$keyword%' OR Seller LIKE '%$keyword%');";
 
         $productSql = mysqli_query($conn, $productQuery);
         $serviceSql = mysqli_query($conn, $serviceQuery);
@@ -137,7 +188,6 @@ include_once 'connect.php';
                                     <h5 class="title item-title"><?php echo $row['ProductName']; ?></h5>
                                     <span><?php echo $row['ProductDescription']; ?></span>
                                     <span> <?php echo $row['Seller']; ?></span>
-                                    <span> <?php echo $row['Price']; ?></span>
 
                                 </div>
                             </div>
@@ -167,7 +217,6 @@ include_once 'connect.php';
                                     <h5 class="title item-title"><?php echo $row['ServiceType']; ?></h5>
                                     <span><?php echo $row['ServiceDescription']; ?></span>
                                     <span> <?php echo $row['Seller']; ?></span>
-                                    <span> <?php echo $row['Price']; ?></span>
                                 </div>
                             </div>
                         </a>
@@ -193,7 +242,7 @@ include_once 'connect.php';
 
                     $category = 'Gas Services';
 
-                    $query = "SELECT Products.ProductName AS ProductName, Products.Price AS Price, Products.Brand AS Brand, Products.image_path AS image_path,Products.ProductDescription AS ProductDescription, Products.Category AS Category, Sellers.BusinessName AS Seller FROM Sellers,Products,sellerProducts WHERE Sellers.SellerID = sellerProducts.SellerID AND Products.ProductID = sellerProducts.ProductID AND Products.Category = '$category';";
+                    $query = "SELECT * FROM sellersProducts WHERE Category = '$category';";
 
                     $sql = mysqli_query($conn, $query);
 
@@ -206,7 +255,6 @@ include_once 'connect.php';
                                     <h5 class="title item-title"><?php echo $row['ProductName']; ?></h5>
                                     <span><?php echo $row['ProductDescription']; ?></span>
                                     <span> <?php echo $row['Seller']; ?></span>
-                                    <span> <?php echo $row['Price']; ?></span>
 
                                 </div>
                             </div>
@@ -228,7 +276,7 @@ include_once 'connect.php';
 
                     $category = 'Clothing & Aparels';
 
-                    $query = "SELECT Products.ProductName AS ProductName, Products.Price AS Price, Products.Brand AS Brand, Products.image_path AS image_path,Products.ProductDescription AS ProductDescription, Products.Category AS Category, Sellers.BusinessName AS Seller FROM Sellers,Products,sellerProducts WHERE Sellers.SellerID = sellerProducts.SellerID AND Products.ProductID = sellerProducts.ProductID AND Products.Category = '$category';";
+                    $query = "SELECT * FROM sellersProducts WHERE Category = '$category';";
 
                     $sql = mysqli_query($conn, $query);
 
@@ -241,7 +289,6 @@ include_once 'connect.php';
                                     <h5 class="title item-title"><?php echo $row['ProductName']; ?></h5>
                                     <span><?php echo $row['ProductDescription']; ?></span>
                                     <span> <?php echo $row['Seller']; ?></span>
-                                    <span> <?php echo $row['Price']; ?></span>
 
                                 </div>
                             </div>
@@ -262,7 +309,7 @@ include_once 'connect.php';
 
                     $category = 'Furniture';
 
-                    $query = "SELECT Products.ProductName AS ProductName, Products.Price AS Price, Products.Brand AS Brand, Products.image_path AS image_path,Products.ProductDescription AS ProductDescription, Products.Category AS Category, Sellers.BusinessName AS Seller FROM Sellers,Products,sellerProducts WHERE Sellers.SellerID = sellerProducts.SellerID AND Products.ProductID = sellerProducts.ProductID AND Products.Category = '$category';";
+                    $query = "SELECT * FROM sellersProducts WHERE Category = '$category';";
 
                     $sql = mysqli_query($conn, $query);
 
@@ -275,7 +322,6 @@ include_once 'connect.php';
                                     <h5 class="title item-title"><?php echo $row['ProductName']; ?></h5>
                                     <span><?php echo $row['ProductDescription']; ?></span>
                                     <span> <?php echo $row['Seller']; ?></span>
-                                    <span> <?php echo $row['Price']; ?></span>
 
                                 </div>
                             </div>
@@ -297,7 +343,7 @@ include_once 'connect.php';
 
                     $category = 'Beddings';
 
-                    $query = "SELECT Products.ProductName AS ProductName, Products.Price AS Price, Products.Brand AS Brand, Products.image_path AS image_path,Products.ProductDescription AS ProductDescription, Products.Category AS Category, Sellers.BusinessName AS Seller FROM Sellers,Products,sellerProducts WHERE Sellers.SellerID = sellerProducts.SellerID AND Products.ProductID = sellerProducts.ProductID AND Products.Category = '$category';";
+                    $query = "SELECT * FROM sellersProducts WHERE Category = '$category';";
 
                     $sql = mysqli_query($conn, $query);
 
@@ -310,7 +356,6 @@ include_once 'connect.php';
                                     <h5 class="title item-title"><?php echo $row['ProductName']; ?></h5>
                                     <span><?php echo $row['ProductDescription']; ?></span>
                                     <span> <?php echo $row['Seller']; ?></span>
-                                    <span> <?php echo $row['Price']; ?></span>
 
                                 </div>
                             </div>
@@ -332,7 +377,7 @@ include_once 'connect.php';
 
                     $category = 'Beauty & Cosmetics';
 
-                    $query = "SELECT Products.ProductName AS ProductName, Products.Price AS Price, Products.Brand AS Brand, Products.image_path AS image_path,Products.ProductDescription AS ProductDescription, Products.Category AS Category, Sellers.BusinessName AS Seller FROM Sellers,Products,sellerProducts WHERE Sellers.SellerID = sellerProducts.SellerID AND Products.ProductID = sellerProducts.ProductID AND Products.Category = '$category';";
+                    $query = "SELECT * FROM sellersProducts WHERE Category = '$category';";
 
                     $sql = mysqli_query($conn, $query);
 
@@ -345,7 +390,6 @@ include_once 'connect.php';
                                     <h5 class="title item-title"><?php echo $row['ProductName']; ?></h5>
                                     <span><?php echo $row['ProductDescription']; ?></span>
                                     <span> <?php echo $row['Seller']; ?></span>
-                                    <span> <?php echo $row['Price']; ?></span>
 
                                 </div>
                             </div>
@@ -367,7 +411,7 @@ include_once 'connect.php';
 
                     $category = 'Hardware';
 
-                    $query = "SELECT Products.ProductName AS ProductName, Products.Price AS Price, Products.Brand AS Brand, Products.image_path AS image_path,Products.ProductDescription AS ProductDescription, Products.Category AS Category, Sellers.BusinessName AS Seller FROM Sellers,Products,sellerProducts WHERE Sellers.SellerID = sellerProducts.SellerID AND Products.ProductID = sellerProducts.ProductID AND Products.Category = '$category';";
+                    $query = "SELECT * FROM sellersProducts WHERE Category = '$category';";
 
                     $sql = mysqli_query($conn, $query);
 
@@ -380,7 +424,6 @@ include_once 'connect.php';
                                     <h5 class="title item-title"><?php echo $row['ProductName']; ?></h5>
                                     <span><?php echo $row['ProductDescription']; ?></span>
                                     <span> <?php echo $row['Seller']; ?></span>
-                                    <span> <?php echo $row['Price']; ?></span>
 
                                 </div>
                             </div>
@@ -402,7 +445,7 @@ include_once 'connect.php';
 
                     $category = 'Households';
 
-                    $query = "SELECT Products.ProductName AS ProductName, Products.Price AS Price, Products.Brand AS Brand, Products.image_path AS image_path,Products.ProductDescription AS ProductDescription, Products.Category AS Category, Sellers.BusinessName AS Seller FROM Sellers,Products,sellerProducts WHERE Sellers.SellerID = sellerProducts.SellerID AND Products.ProductID = sellerProducts.ProductID AND Products.Category = '$category';";
+                    $query = "SELECT * FROM sellersProducts WHERE Category = '$category';";
 
                     $sql = mysqli_query($conn, $query);
 
@@ -415,7 +458,6 @@ include_once 'connect.php';
                                     <h5 class="title item-title"><?php echo $row['ProductName']; ?></h5>
                                     <span><?php echo $row['ProductDescription']; ?></span>
                                     <span> <?php echo $row['Seller']; ?></span>
-                                    <span> <?php echo $row['Price']; ?></span>
 
                                 </div>
                             </div>
@@ -437,7 +479,7 @@ include_once 'connect.php';
 
                     $category = 'Bookshop & Stationary';
 
-                    $query = "SELECT Products.ProductName AS ProductName, Products.Price AS Price, Products.Brand AS Brand, Products.image_path AS image_path,Products.ProductDescription AS ProductDescription, Products.Category AS Category, Sellers.BusinessName AS Seller FROM Sellers,Products,sellerProducts WHERE Sellers.SellerID = sellerProducts.SellerID AND Products.ProductID = sellerProducts.ProductID AND Products.Category = '$category';";
+                    $query = "SELECT * FROM sellersProducts WHERE Category = '$category';";
 
                     $sql = mysqli_query($conn, $query);
 
@@ -450,7 +492,6 @@ include_once 'connect.php';
                                     <h5 class="title item-title"><?php echo $row['ProductName']; ?></h5>
                                     <span><?php echo $row['ProductDescription']; ?></span>
                                     <span> <?php echo $row['Seller']; ?></span>
-                                    <span> <?php echo $row['Price']; ?></span>
 
                                 </div>
                             </div>
@@ -471,7 +512,7 @@ include_once 'connect.php';
 
                     $category = 'General Stores';
 
-                    $query = "SELECT Products.ProductName AS ProductName, Products.Price AS Price, Products.Brand AS Brand, Products.image_path AS image_path,Products.ProductDescription AS ProductDescription, Products.Category AS Category, Sellers.BusinessName AS Seller FROM Sellers,Products,sellerProducts WHERE Sellers.SellerID = sellerProducts.SellerID AND Products.ProductID = sellerProducts.ProductID AND Products.Category = '$category';";
+                    $query = "SELECT * FROM sellersProducts WHERE Category = '$category';";
 
                     $sql = mysqli_query($conn, $query);
 
@@ -484,7 +525,6 @@ include_once 'connect.php';
                                     <h5 class="title item-title"><?php echo $row['ProductName']; ?></h5>
                                     <span><?php echo $row['ProductDescription']; ?></span>
                                     <span> <?php echo $row['Seller']; ?></span>
-                                    <span> <?php echo $row['Price']; ?></span>
 
                                 </div>
                             </div>
@@ -506,7 +546,7 @@ include_once 'connect.php';
 
                     $category = 'Electronics';
 
-                    $query = "SELECT Products.ProductName AS ProductName, Products.Price AS Price, Products.Brand AS Brand, Products.image_path AS image_path,Products.ProductDescription AS ProductDescription, Products.Category AS Category, Sellers.BusinessName AS Seller FROM Sellers,Products,sellerProducts WHERE Sellers.SellerID = sellerProducts.SellerID AND Products.ProductID = sellerProducts.ProductID AND Products.Category = '$category';";
+                    $query = "SELECT * FROM sellersProducts WHERE Category = '$category';";
 
                     $sql = mysqli_query($conn, $query);
 
@@ -519,7 +559,6 @@ include_once 'connect.php';
                                     <h5 class="title item-title"><?php echo $row['ProductName']; ?></h5>
                                     <span><?php echo $row['ProductDescription']; ?></span>
                                     <span> <?php echo $row['Seller']; ?></span>
-                                    <span> <?php echo $row['Price']; ?></span>
 
                                 </div>
                             </div>
@@ -540,7 +579,7 @@ include_once 'connect.php';
 
                     $category = 'Health Services';
 
-                    $query = "SELECT Services.ServiceType AS ServiceType, Services.Price AS Price,Services.image_path AS image_path, Services.ServiceDescription AS ServiceDescription, Sellers.BusinessName AS Seller FROM Sellers,Services,sellerServices WHERE Sellers.SellerID = sellerServices.SellerID AND Services.ServiceID = sellerServices.ServiceID AND Services.ServiceType = '$category';";
+                    $query = "SELECT * FROM sellersServices WHERE ServiceType = '$category';";
 
                     $sql = mysqli_query($conn, $query);
 
@@ -553,7 +592,6 @@ include_once 'connect.php';
                                     <h5 class="title item-title"><?php echo $row['ServiceType']; ?></h5>
                                     <span> <?php echo $row['Seller']; ?></span>
                                     <span> <?php echo $row['ServiceDescription']; ?></span>
-                                    <span> <?php echo $row['Price']; ?></span>
                                 </div>
                             </div>
                         </a>
@@ -574,7 +612,7 @@ include_once 'connect.php';
 
                     $category = 'Hairdressing';
 
-                    $query = "SELECT Services.ServiceType AS ServiceType, Services.Price AS Price,Services.image_path AS image_path, Services.ServiceDescription AS ServiceDescription, Sellers.BusinessName AS Seller FROM Sellers,Services,sellerServices WHERE Sellers.SellerID = sellerServices.SellerID AND Services.ServiceID = sellerServices.ServiceID AND Services.ServiceType = '$category';";
+                    $query = "SELECT * FROM sellersServices WHERE ServiceType = '$category';";
 
                     $sql = mysqli_query($conn, $query);
 
@@ -587,7 +625,6 @@ include_once 'connect.php';
                                     <h5 class="title item-title"><?php echo $row['ServiceType']; ?></h5>
                                     <span> <?php echo $row['Seller']; ?></span>
                                     <span> <?php echo $row['ServiceDescription']; ?></span>
-                                    <span> <?php echo $row['Price']; ?></span>
                                 </div>
                             </div>
                         </a>
@@ -607,7 +644,7 @@ include_once 'connect.php';
 
                     $category = 'Haircut';
 
-                    $query = "SELECT Services.ServiceType AS ServiceType, Services.Price AS Price,Services.image_path AS image_path, Services.ServiceDescription AS ServiceDescription, Sellers.BusinessName AS Seller FROM Sellers,Services,sellerServices WHERE Sellers.SellerID = sellerServices.SellerID AND Services.ServiceID = sellerServices.ServiceID AND Services.ServiceType = '$category';";
+                    $query = "SELECT * FROM sellersServices WHERE ServiceType = '$category';";
 
                     $sql = mysqli_query($conn, $query);
 
@@ -620,7 +657,6 @@ include_once 'connect.php';
                                     <h5 class="title item-title"><?php echo $row['ServiceType']; ?></h5>
                                     <span> <?php echo $row['Seller']; ?></span>
                                     <span> <?php echo $row['ServiceDescription']; ?></span>
-                                    <span> <?php echo $row['Price']; ?></span>
                                 </div>
                             </div>
                         </a>
@@ -641,7 +677,7 @@ include_once 'connect.php';
 
                     $category = 'Electronics Repair';
 
-                    $query = "SELECT Services.ServiceType AS ServiceType, Services.Price AS Price,Services.image_path AS image_path, Services.ServiceDescription AS ServiceDescription, Sellers.BusinessName AS Seller FROM Sellers,Services,sellerServices WHERE Sellers.SellerID = sellerServices.SellerID AND Services.ServiceID = sellerServices.ServiceID AND Services.ServiceType = '$category';";
+                    $query = "SELECT * FROM sellersServices WHERE ServiceType = '$category';";
 
                     $sql = mysqli_query($conn, $query);
 
@@ -654,7 +690,6 @@ include_once 'connect.php';
                                     <h5 class="title item-title"><?php echo $row['ServiceType']; ?></h5>
                                     <span> <?php echo $row['Seller']; ?></span>
                                     <span> <?php echo $row['ServiceDescription']; ?></span>
-                                    <span> <?php echo $row['Price']; ?></span>
                                 </div>
                             </div>
                         </a>
@@ -687,7 +722,6 @@ include_once 'connect.php';
                                     <h5 class="title item-title"><?php echo $row['ServiceType']; ?></h5>
                                     <span> <?php echo $row['Seller']; ?></span>
                                     <span> <?php echo $row['ServiceDescription']; ?></span>
-                                    <span> <?php echo $row['Price']; ?></span>
                                 </div>
                             </div>
                         </a>
@@ -707,7 +741,7 @@ include_once 'connect.php';
 
                     $category = 'Carrier Services';
 
-                    $query = "SELECT Services.ServiceType AS ServiceType, Services.Price AS Price,Services.image_path AS image_path, Services.ServiceDescription AS ServiceDescription, Sellers.BusinessName AS Seller FROM Sellers,Services,sellerServices WHERE Sellers.SellerID = sellerServices.SellerID AND Services.ServiceID = sellerServices.ServiceID AND Services.ServiceType = '$category';";
+                    $query = "SELECT * FROM sellersServices WHERE ServiceType = '$category';";
 
                     $sql = mysqli_query($conn, $query);
 
@@ -720,7 +754,6 @@ include_once 'connect.php';
                                     <h5 class="title item-title"><?php echo $row['ServiceType']; ?></h5>
                                     <span> <?php echo $row['Seller']; ?></span>
                                     <span> <?php echo $row['ServiceDescription']; ?></span>
-                                    <span> <?php echo $row['Price']; ?></span>
                                 </div>
                             </div>
                         </a>
@@ -763,13 +796,37 @@ include_once 'connect.php';
         <div class="footer-container container d-grid">
             <div class="org-data">
                 <div class="logo">
-                    <a href="./index.html" class="link">
-                        <h3 class="logo-name">Kabarak<span class="tm">B2B</span></h3>
-                    </a>
+                    <?php
+                    if ($operator === "seller") {
+                    ?>
+                        <a href="<?php echo './' . $operator . 'Dashboard.php' ?>" class="link">
+                            <h3 class="logo-name">Kabarak<span class="tm">B2B</span></h3>
+                        </a>
+                    <?php
+                    } else {
+                    ?>
+                        <a href="./index.html" class="link">
+                            <h3 class="logo-name">Kabarak<span class="tm">B2B</span></h3>
+                        </a>
+                    <?php
+                    }
+                    ?>
                 </div>
                 <div class="org-description">
                     <p>The top leading Affiliates located at Kabarak University Main Campus.</p>
                     <p>We deal with marketing businesses at a commission paid per month.</p>
+                    <h6 class="title footer-title" id="contact-us">Our Contacts</h6>
+                    <ul class="list footer-list">
+                        <li class="list-item">Call: <a href="https://tel: +254104945962" class="link">0104945962</a>
+                        </li>
+                        <li class="list-item">SMS: <a href="https://sms: +254769320092" class="link">0769320092</a>
+                        </li>
+                        <li class="list-item">WhatsApp: <a href="https://wa.me/+25479463900" class="link">AlphaTech
+                                Solutions</a></li>
+                        <li class="list-item"> Email : <a
+                                href="mailto:sangera@kabarak.ac.ke?bcc=lukelasharon02@gmail.com,maxwellwafula884@gmail.com,sharif@kabarak.ac.ke"
+                                class="link">info@kabub2b.com</a></li>
+                    </ul>
                     <ul class="list social-media">
                         <li class="list-item">
                             <a href="" class="link"><i class="ri-facebook-line"></i></a>
@@ -787,37 +844,33 @@ include_once 'connect.php';
             </div>
 
             <div>
-                <h6 class="title footer-title">Categories</h6>
+                <h6 class="title footer-title">Products</h6>
                 <ul class="list footer-list">
-                    <li class="list-item"><a href="./post.php#clothing&apparels" class="link">Clothing & Apparels</a>
-                    </li>
+                    <li class="list-item"><a href="./post.php#clothing&apparels" class="link">Clothing & Apparels</a></li>
                     <li class="list-item"><a href="./post.php#furniture" class="link">Furniture</a></li>
-                    <li class="list-item"><a href="./post.php#gas-services" class="link">Gas Services</a></li>
+                    <li class="list-item"><a href="./post.php#gas-services" class="link">Gas Cylinders</a></li>
                     <li class="list-item"><a href="./post.php#health" class="link">Health Services</a></li>
                     <li class="list-item"><a href="./post.php#beauty&cosmetic" class="link">Beauty & Cosmetics</a></li>
-                    <li class="list-item"><a href="./post.php#bookshop&stationary" class="link">BookShops &
-                            Stationaries</a></li>
+                    <li class="list-item"><a href="./post.php#bookshop&stationary" class="link">BookShops & Stationaries</a></li>
                     <li class="list-item"><a href="./post.php#general-stores" class="link">General Stores</a></li>
                     <li class="list-item"><a href="./post.php#households" class="link">HouseHolds</a></li>
                     <li class="list-item"><a href="./post.php#hardware" class="link">Hardware</a></li>
                     <li class="list-item"><a href="./post.php#beddings" class="link">Beddings</a></li>
                     <li class="list-item"><a href="./post.php#electronics" class="link">Electronics</a></li>
-                    <li class="list-item"><a href="./post.php#hairdressing" class="link">Hairdressing</a></li>
-                    <li class="list-item"><a href="./post.php#haircut" class="link">Beddings</a></li>
-                    <li class="list-item"><a href="./post.php#electronics-repair" class="link">Electronics Repair</a>
-                    </li>
-                    <li class="list-item"><a href="./post.php#shoe-repair" class="link">Shoe Repair</a></li>
-                    <li class="list-item"><a href="./post.php#carrier-services" class="link">Carrier Services</a></li>
                 </ul>
             </div>
 
             <div>
-                <h6 class="title footer-title" id="contact-us">Our Contacts</h6>
+                <h6 class="title footer-title">Services</h6>
                 <ul class="list footer-list">
-                    <li class="list-item">Call: <a href="https://tel: +254797630228" class="link">0797630228</a></li>
-                    <li class="list-item">WhatsApp: <a href="https://wa.me/+254797630228" class="link">AlphaTech
-                            Solutions</a></li>
-                    <li class="list-item"> Email : <a href="mailto:sangera@kabarak.ac.ke?bcc=lukelasharon02@gmail.com,maxwellwafula@gmail.com,sharif@kabarak.ac.ke" class="link">info@kabub2b.com</a></li>
+                    <li class="list-item"><a href="./post.php#health" class="link">Health</a></li>
+                    <li class="list-item"><a href="./post.php#haircut" class="link">Haircut</a></li>
+                    <li class="list-item"><a href="./post.php#hairdressing" class="link">Hairdressing</a></li>
+                    <li class="list-item"><a href="./post.php#gas-services" class="link">Gas Refill</a></li>
+                    <li class="list-item"><a href="./post.php#haircut" class="link">Beddings</a></li>
+                    <li class="list-item"><a href="./post.php#electronics-repair" class="link">Electronics Repair</a></li>
+                    <li class="list-item"><a href="./post.php#shoe-repair" class="link">Shoe Repair</a></li>
+                    <li class="list-item"><a href="./post.php#carrier-services" class="link">Carrier Services</a></li>
                 </ul>
             </div>
         </div>

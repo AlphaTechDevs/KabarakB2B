@@ -4,9 +4,13 @@ ini_set('display_errors', 1);
 // Set cache headers for 1 week
 header("Cache-Control: max-age=604800, public");
 
+
 session_start();
 
+$operator = $_SESSION['operator'] ?? 'buyer' ;
+
 include_once 'connect.php';
+
 
 $seller = urldecode($_GET['seller']);
 $price = urldecode($_GET['price']);
@@ -51,7 +55,7 @@ while ($row = mysqli_fetch_assoc($sql)) {
         }
 
         .contact-container {
-            margin-top: 10%;
+            margin-top: 5%;
             justify-content: center;
             align-items: center;
             display: flex;
@@ -150,19 +154,45 @@ while ($row = mysqli_fetch_assoc($sql)) {
                 <i class="ri-menu-3-line"></i>
             </button>
             <div class="logo">
-                <a href="./index.html" class="link">
-                    <h3 class="logo-name">Kabarak<span class="tm">B2B</span></h3>
-                </a>
+                <?php
+                if ($operator === "seller") {
+                ?>
+                    <a href="<?php echo './' . $operator . 'Dashboard.php' ?>" class="link">
+                        <h3 class="logo-name">Kabarak<span class="tm">B2B</span></h3>
+                    </a>
+                <?php
+                } else {
+                ?>
+                    <a href="./index.html" class="link">
+                        <h3 class="logo-name">Kabarak<span class="tm">B2B</span></h3>
+                    </a>
+                <?php
+                }
+                ?>
             </div>
         </div>
         <nav class="navbar" id="navbar1">
             <div class="menu">
+
                 <ul class="list">
-                    <li class="menu-item"><a href="./index.html#" class="link">Home</a></li>
-                    <li class="menu-item"><a href="./index.html#contact-us" class="link">Contact us</a></li>
-                    <li class="menu-item"><a href="./index.html#about-us" class="link">About us</a></li>
-                    <li class="menu-item"><a href="./login.html" class="link">Login</a></li>
-                    <li class="menu-item"><a href="./signup.php" class="link">Register</a></li>
+                    <?php
+                    if ($operator === "seller") {
+                    ?>
+                        <li class="menu-item"><a href="./index.html#" class="link">Home</a></li>
+                        <li class="menu-item"><a href="./index.html#contact-us" class="link">Contact us</a></li>
+                        <li class="menu-item"><a href="./index.html#about-us" class="link">About us</a></li>
+                        <li class="menu-item"><a href="./logout.php" class="link">Logout</a></li>
+                    <?php
+                    } else {
+                    ?>
+                        <li class="menu-item"><a href="./index.html#" class="link">Home</a></li>
+                        <li class="menu-item"><a href="./index.html#contact-us" class="link">Contact us</a></li>
+                        <li class="menu-item"><a href="./index.html#about-us" class="link">About us</a></li>
+                        <li class="menu-item"><a href="./login.html" class="link">Login</a></li>
+                        <li class="menu-item"><a href="./signup.php" class="link">Register</a></li>
+                    <?php
+                    }
+                    ?>
                 </ul>
             </div>
         </nav>
@@ -176,15 +206,14 @@ while ($row = mysqli_fetch_assoc($sql)) {
                     <li class="menu-item"><a href="./index.html" class="link item-hidden">Home</a></li>
                     <li class="menu-item"><a href="./index.html#contact-us" class="link item-hidden">Contact us</a></li>
                     <li class="menu-item"><a href="./index.html#about-us" class="link item-hidden">About us</a></li>
-                    <li class="menu-item"><a href="./login.html" class="link item-hidden">Login</a></li>
-                    <li class="menu-item"><a href="./signup.php" class="link item-hidden">Register</a></li>
-
-                    <li class="menu-item"><a href="./post.php#clothing&apparels" class="link">Clothing & Apparels</a></li>
+                    <li class="menu-item"><a href="./post.php#clothing&apparels" class="link">Clothing & Apparels</a>
+                    </li>
                     <li class="menu-item"><a href="./post.php#furniture" class="link">Furniture</a></li>
                     <li class="menu-item"><a href="./post.php#gas-services" class="link">Gas Services</a></li>
                     <li class="menu-item"><a href="./post.php#health" class="link">Health Services</a></li>
                     <li class="menu-item"><a href="./post.php#beauty&cosmetics" class="link">Beauty & Cosmetics</a></li>
-                    <li class="menu-item"><a href="./post.php#bookshop&stationary" class="link">BookShops & Stationaries</a></li>
+                    <li class="menu-item"><a href="./post.php#bookshop&stationary" class="link">BookShops &
+                            Stationaries</a></li>
                     <li class="menu-item"><a href="./post.php#general-stores" class="link">General Stores</a></li>
                     <li class="menu-item"><a href="./post.php#households" class="link">HouseHolds</a></li>
                     <li class="menu-item"><a href="./post.php#hardware" class="link">Hardware</a></li>
@@ -192,11 +221,40 @@ while ($row = mysqli_fetch_assoc($sql)) {
                     <li class="menu-item"><a href="./post.php#beddings" class="link">Beddings</a></li>
                     <li class="menu-item"><a href="./post.php#hairdressing" class="link">Hairdressing</a></li>
                     <li class="menu-item"><a href="./post.php#haircut" class="link">Haircut</a></li>
+                    <?php
+                    if ($operator === "seller") {
+                    ?>
+                        <li class="menu-item">
+                            <a href="./my_profile.php" class="link"><i class="#"></i>My Profile</a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="./setPassword.php" class="link"><i class="#"></i>Update Password</a>
+                        </li>
+                        <li class="menu-item"><a href="./logout.php" class="link item-hidden">Logout</a></li>
+                    <?php
+                    } else {
+                    ?>
+                        <li class="menu-item"><a href="./login.html" class="link item-hidden">Login</a></li>
+                        <li class="menu-item"><a href="./signup.php" class="link item-hidden">Register</a></li>
+                    <?php
+                    }
+                    ?>
                 </ul>
             </div>
         </nav>
     </header>
-
+    <!--Search form-->
+    <div class="search-form-container container" id="search-form-container">
+        <div class="container-inner">
+            <form action="./post.php" class="form">
+                <input type="hidden" name="operator" value="<?php echo htmlspecialchars($operator); ?>">
+                <input type="search" name="keyword" id="keyword" class="form-input" placeholder="What are you looking for?">
+                <button class="btn form-btn" type="submit">
+                    <i class="ri-search-line"></i>
+                </button>
+            </form>
+        </div>
+    </div>
     <div class="contact-container">
         <div class="contact-box">
             <h2>Contact Seller</h2>
@@ -204,7 +262,6 @@ while ($row = mysqli_fetch_assoc($sql)) {
                 <p>Service Type/Product Name:<br> <?php echo $service; ?></p>
                 <p>Description: <br> <?php echo $description; ?></p>
                 <p>Seller:<br> <?php echo $seller; ?></p>
-                <p>Price:<br> <?php echo 'Ksh. ' . $price; ?></p>
             </div>
             <div class="contact-options">
                 <button class="contact-btn" onclick="openWhatsApp()">
@@ -234,20 +291,19 @@ while ($row = mysqli_fetch_assoc($sql)) {
             <div class="featured-items-container d-grid">
                 <?php
 
-                $query = "SELECT Products.ProductName AS ProductName, Products.Price AS Price, Products.Brand AS Brand, Products.image_path AS image_path,Products.ProductDescription AS ProductDescription, Products.Category AS Category, Sellers.BusinessName AS Seller FROM Sellers,Products,sellerProducts WHERE Sellers.SellerID = sellerProducts.SellerID AND Products.ProductID = sellerProducts.ProductID AND Sellers.BusinessName = '$seller'";
+                $query = "SELECT * FROM sellersProducts WHERE Seller = '$seller'";
 
                 $sql = mysqli_query($conn, $query);
 
                 while ($row = mysqli_fetch_assoc($sql)) {
                 ?>
-                    <a href="./contactSeller.php?seller=<?php echo urlencode($row['Seller']); ?>&category=<?php echo urlencode($row['Category']);?>&price=<?php echo urlencode($row['Price']); ?>&service=<?php echo urlencode($row['ProductName']); ?>&image_path=<?php echo urlencode('./' . $row['image_path']); ?>&description=<?php echo urlencode($row['ProductDescription']); ?>" class="item">
+                    <a href="./contactSeller.php?seller=<?php echo urlencode($row['Seller']); ?>&category=<?php echo urlencode($row['Category']); ?>&price=<?php echo urlencode($row['Price']); ?>&service=<?php echo urlencode($row['ProductName']); ?>&image_path=<?php echo urlencode('./' . $row['image_path']); ?>&description=<?php echo urlencode($row['ProductDescription']); ?>" class="item">
                         <img src="<?php echo './' . $row['image_path']; ?>" alt="<?php echo $row['Seller']; ?>" class="item-image">
                         <div class="item-data-container">
                             <div class="item-data">
                                 <h5 class="title item-title"><?php echo $row['ProductName']; ?></h5>
                                 <span><?php echo $row['ProductDescription']; ?></span>
                                 <span> <?php echo $row['Seller']; ?></span>
-                                <span> <?php echo $row['Price']; ?></span>
 
                             </div>
                         </div>
@@ -260,20 +316,19 @@ while ($row = mysqli_fetch_assoc($sql)) {
             <div class="featured-items-container d-grid">
                 <?php
 
-                $query = "SELECT Services.ServiceType AS ServiceType, Services.Price AS Price,Services.image_path AS image_path, Services.ServiceDescription AS ServiceDescription, Sellers.BusinessName AS Seller FROM Sellers,Services,sellerServices WHERE Sellers.SellerID = sellerServices.SellerID AND Services.ServiceID = sellerServices.ServiceID AND Sellers.BusinessName = '$seller';";
+                $query = "SELECT * FROM sellersServices WHERE Seller = '$seller';";
 
                 $sql = mysqli_query($conn, $query);
 
                 while ($row = mysqli_fetch_assoc($sql)) {
                 ?>
-                    <a href="./contactSeller.php?seller=<?php echo urlencode($row['Seller']); ?>&category=<?php echo urlencode($row['ServiceType']);?>&price=<?php echo urlencode($row['Price']); ?>&service=<?php echo urlencode($row['ServiceType']); ?>&image_path=<?php echo urlencode('./' . $row['image_path']); ?>&description=<?php echo urlencode($row['ServiceDescription']); ?>" class="item">
+                    <a href="./contactSeller.php?seller=<?php echo urlencode($row['Seller']); ?>&category=<?php echo urlencode($row['ServiceType']); ?>&price=<?php echo urlencode($row['Price']); ?>&service=<?php echo urlencode($row['ServiceType']); ?>&image_path=<?php echo urlencode('./' . $row['image_path']); ?>&description=<?php echo urlencode($row['ServiceDescription']); ?>" class="item">
                         <img src="<?php echo './' . $row['image_path']; ?>" alt="<?php echo $row['Seller']; ?>" class="item-image">
                         <div class="item-data-container">
                             <div class="item-data">
                                 <h5 class="title item-title"><?php echo $row['ServiceType']; ?></h5>
                                 <span> <?php echo $row['Seller']; ?></span>
                                 <span> <?php echo $row['ServiceDescription']; ?></span>
-                                <span> <?php echo $row['Price']; ?></span>
                             </div>
                         </div>
                     </a>
@@ -283,7 +338,6 @@ while ($row = mysqli_fetch_assoc($sql)) {
             </div>
         </div>
     </section>
-
     <!--You may also like the service or Product From other sellers-->
     <section class="featured-items section" id="seller-products">
         <div class="container">
@@ -291,20 +345,19 @@ while ($row = mysqli_fetch_assoc($sql)) {
 
             <div class="featured-items-container d-grid">
                 <?php
-                $query = "SELECT Services.ServiceType AS ServiceType, Services.Price AS Price,Services.image_path AS image_path, Services.ServiceDescription AS ServiceDescription, Sellers.BusinessName AS Seller FROM Sellers,Services,sellerServices WHERE Sellers.SellerID = sellerServices.SellerID AND Services.ServiceID = sellerServices.ServiceID AND Services.ServiceType = '$category' AND Sellers.BusinessName <> '$seller';";
+                $query = "SELECT * FROM sellersServices WHERE ServiceType = '$category' AND Seller <> '$seller';";
 
                 $sql = mysqli_query($conn, $query);
 
                 while ($row = mysqli_fetch_assoc($sql)) {
                 ?>
-                    <a href="./contactSeller.php?seller=<?php echo urlencode($row['Seller']); ?>&category=<?php echo urlencode($row['ServiceType']);?>&price=<?php echo urlencode($row['Price']); ?>&service=<?php echo urlencode($row['ServiceType']); ?>&image_path=<?php echo urlencode('./' . $row['image_path']); ?>&description=<?php echo urlencode($row['ServiceDescription']); ?>" class="item">
+                    <a href="./contactSeller.php?seller=<?php echo urlencode($row['Seller']); ?>&category=<?php echo urlencode($row['ServiceType']); ?>&price=<?php echo urlencode($row['Price']); ?>&service=<?php echo urlencode($row['ServiceType']); ?>&image_path=<?php echo urlencode('./' . $row['image_path']); ?>&description=<?php echo urlencode($row['ServiceDescription']); ?>" class="item">
                         <img src="<?php echo './' . $row['image_path']; ?>" alt="<?php echo $row['Seller']; ?>" class="item-image">
                         <div class="item-data-container">
                             <div class="item-data">
                                 <h5 class="title item-title"><?php echo $row['ServiceType']; ?></h5>
                                 <span> <?php echo $row['Seller']; ?></span>
                                 <span> <?php echo $row['ServiceDescription']; ?></span>
-                                <span> <?php echo $row['Price']; ?></span>
                             </div>
                         </div>
                     </a>
@@ -316,20 +369,19 @@ while ($row = mysqli_fetch_assoc($sql)) {
             <div class="featured-items-container d-grid">
                 <?php
 
-                $query = "SELECT Products.ProductName AS ProductName, Products.Price AS Price, Products.Brand AS Brand, Products.image_path AS image_path, Products.Category AS Category, Products.ProductDescription AS ProductDescription, Sellers.BusinessName AS Seller FROM Sellers,Products,sellerProducts WHERE Sellers.SellerID = sellerProducts.SellerID AND Products.ProductID = sellerProducts.ProductID AND Products.Category = '$category' AND Sellers.BusinessName <> '$seller';";
+                $query = "SELECT * FROM sellersProducts WHERE Category = '$category' AND Seller <> '$seller';";
 
                 $sql = mysqli_query($conn, $query);
 
                 while ($row = mysqli_fetch_assoc($sql)) {
                 ?>
-                    <a href="./contactSeller.php?seller=<?php echo urlencode($row['Seller']); ?>&category=<?php echo urlencode($row['Category']);?>&price=<?php echo urlencode($row['Price']); ?>&service=<?php echo urlencode($row['ProductName']); ?>&image_path=<?php echo urlencode('./' . $row['image_path']); ?>&description=<?php echo urlencode($row['ProductDescription']); ?>" class="item">
+                    <a href="./contactSeller.php?seller=<?php echo urlencode($row['Seller']); ?>&category=<?php echo urlencode($row['Category']); ?>&price=<?php echo urlencode($row['Price']); ?>&service=<?php echo urlencode($row['ProductName']); ?>&image_path=<?php echo urlencode('./' . $row['image_path']); ?>&description=<?php echo urlencode($row['ProductDescription']); ?>" class="item">
                         <img src="<?php echo './' . $row['image_path']; ?>" alt="<?php echo $row['Seller']; ?>" class="item-image">
                         <div class="item-data-container">
                             <div class="item-data">
                                 <h5 class="title item-title"><?php echo $row['ProductName']; ?></h5>
                                 <span><?php echo $row['ProductDescription']; ?></span>
                                 <span> <?php echo $row['Seller']; ?></span>
-                                <span> <?php echo $row['Price']; ?></span>
 
                             </div>
                         </div>
@@ -368,13 +420,35 @@ while ($row = mysqli_fetch_assoc($sql)) {
         <div class="footer-container container d-grid">
             <div class="org-data">
                 <div class="logo">
-                    <a href="./index.html" class="link">
-                        <h3 class="logo-name">Kabarak<span class="tm">B2B</span></h3>
-                    </a>
+                    <?php
+                    if ($operator === "seller") {
+                    ?>
+                        <a href="<?php echo './' . $operator . 'Dashboard.php' ?>" class="link">
+                            <h3 class="logo-name">Kabarak<span class="tm">B2B</span></h3>
+                        </a>
+                    <?php
+                    } else {
+                    ?>
+                        <a href="./index.html" class="link">
+                            <h3 class="logo-name">Kabarak<span class="tm">B2B</span></h3>
+                        </a>
+                    <?php
+                    }
+                    ?>
                 </div>
                 <div class="org-description">
                     <p>The top leading Affiliates located at Kabarak University Main Campus.</p>
                     <p>We deal with marketing businesses at a commission paid per month.</p>
+                    <h6 class="title footer-title" id="contact-us">Our Contacts</h6>
+                    <ul class="list footer-list">
+                        <li class="list-item">Call: <a href="https://tel: +254104945962" class="link">0104945962</a>
+                        </li>
+                        <li class="list-item">SMS: <a href="https://sms: +254769320092" class="link">0769320092</a>
+                        </li>
+                        <li class="list-item">WhatsApp: <a href="https://wa.me/+25479463900" class="link">AlphaTech
+                                Solutions</a></li>
+                        <li class="list-item"> Email : <a href="mailto:sangera@kabarak.ac.ke?bcc=lukelasharon02@gmail.com,maxwellwafula884@gmail.com,sharif@kabarak.ac.ke" class="link">info@kabub2b.com</a></li>
+                    </ul>
                     <ul class="list social-media">
                         <li class="list-item">
                             <a href="" class="link"><i class="ri-facebook-line"></i></a>
@@ -392,11 +466,11 @@ while ($row = mysqli_fetch_assoc($sql)) {
             </div>
 
             <div>
-                <h6 class="title footer-title">Categories</h6>
+                <h6 class="title footer-title">Products</h6>
                 <ul class="list footer-list">
                     <li class="list-item"><a href="./post.php#clothing&apparels" class="link">Clothing & Apparels</a></li>
                     <li class="list-item"><a href="./post.php#furniture" class="link">Furniture</a></li>
-                    <li class="list-item"><a href="./post.php#gas-services" class="link">Gas Services</a></li>
+                    <li class="list-item"><a href="./post.php#gas-services" class="link">Gas Cylinders</a></li>
                     <li class="list-item"><a href="./post.php#health" class="link">Health Services</a></li>
                     <li class="list-item"><a href="./post.php#beauty&cosmetic" class="link">Beauty & Cosmetics</a></li>
                     <li class="list-item"><a href="./post.php#bookshop&stationary" class="link">BookShops & Stationaries</a></li>
@@ -405,20 +479,20 @@ while ($row = mysqli_fetch_assoc($sql)) {
                     <li class="list-item"><a href="./post.php#hardware" class="link">Hardware</a></li>
                     <li class="list-item"><a href="./post.php#beddings" class="link">Beddings</a></li>
                     <li class="list-item"><a href="./post.php#electronics" class="link">Electronics</a></li>
-                    <li class="list-item"><a href="./post.php#hairdressing" class="link">Hairdressing</a></li>
-                    <li class="list-item"><a href="./post.php#haircut" class="link">Beddings</a></li>
-                    <li class="list-item"><a href="./post.php#electronics-repair" class="link">Electronics Repair</a></li>
-                    <li class="list-item"><a href="./post.php#shoe-repair" class="link">Shoe Repair</a></li>
-                    <li class="list-item"><a href="./post.php#carrier-services" class="link">Carrier Services</a></li>
                 </ul>
             </div>
 
             <div>
-                <h6 class="title footer-title" id="contact-us">Our Contacts</h6>
+                <h6 class="title footer-title">Services</h6>
                 <ul class="list footer-list">
-                    <li class="list-item">Call: <a href="https://tel: +254797630228" class="link">0797630228</a></li>
-                    <li class="list-item">WhatsApp: <a href="https://wa.me/+254797630228" class="link">AlphaTech Solutions</a></li>
-                    <li class="list-item"> Email : <a href="mailto:sangera@kabarak.ac.ke?bcc=lukelasharon02@gmail.com,maxwellwafula@gmail.com,sharif@kabarak.ac.ke" class="link">info@kabub2b.com</a></li>
+                    <li class="list-item"><a href="./post.php#health" class="link">Health</a></li>
+                    <li class="list-item"><a href="./post.php#haircut" class="link">Haircut</a></li>
+                    <li class="list-item"><a href="./post.php#hairdressing" class="link">Hairdressing</a></li>
+                    <li class="list-item"><a href="./post.php#gas-services" class="link">Gas Refill</a></li>
+                    <li class="list-item"><a href="./post.php#haircut" class="link">Beddings</a></li>
+                    <li class="list-item"><a href="./post.php#electronics-repair" class="link">Electronics Repair</a></li>
+                    <li class="list-item"><a href="./post.php#shoe-repair" class="link">Shoe Repair</a></li>
+                    <li class="list-item"><a href="./post.php#carrier-services" class="link">Carrier Services</a></li>
                 </ul>
             </div>
         </div>
