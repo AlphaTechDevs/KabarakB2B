@@ -12,42 +12,83 @@ if ($operator != 'admin') {
 } else {
     include_once 'connect.php';
 
-    if (isset($_POST['del-product'])) {
-        // Retrieve the product ID from the form
-        $productID = $_POST["product_id"];
+    $user = $_SESSION['user'];
 
-        // Add your SQL query to delete the product from the database
-        $deleteQuery = "DELETE FROM Products WHERE ProductID = $productID";
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-        // Execute the query
-        $result = mysqli_query($conn, $deleteQuery);
+        $password = $_POST["password"];
+        // Check if the password matches the admin's password
+        $query = "SELECT Passphrase FROM Admin WHERE Telephone = '$user';";
 
-        // Check if the deletion was successful
-        if ($result) {
-            $message = "Product deleted successfully!";
-            $popupClass = "success-popup";
-        } else {
-            $message = "Error deleting product: " . mysqli_error($conn);
-            $popupClass = "error-popup";
+        //Run the Query
+        $sql = mysqli_query($conn, $query);
+
+        //Pick Data From Database
+
+        if ($row = mysqli_fetch_array($sql)) {
+
+            $hashed_password = $row['Passphrase'];
+
+            if (password_verify($password, $hashed_password)) {
+                // Retrieve the seller ID from the form
+                $productID = $_POST["item_id"];
+
+                // Add your SQL query to delete the product from the database
+                $deleteQuery = "DELETE FROM Products WHERE ProductID = $productID";
+
+                // Execute the query
+                $result = mysqli_query($conn, $deleteQuery);
+
+                // Check if the deletion was successful
+                if ($result) {
+                    $message = "Product deleted successfully!";
+                    $popupClass = "success-popup";
+                } else {
+                    $message = "Error deleting product: " . mysqli_error($conn);
+                    $popupClass = "error-popup";
+                }
+            } else {
+                $message = "Incorrect password! Product not deleted.";
+                $popupClass = "error-popup";
+            }
         }
     }
-    if (isset($_POST['del-service'])) {
-        // Retrieve the product ID from the form
-        $serviceID = $_POST["service_id"];
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-        // Add your SQL query to delete the product from the database
-        $deleteQuery = "DELETE FROM Services WHERE ServiceID = $serviceID";
+        $password = $_POST["password"];
+        // Check if the password matches the admin's password
+        $query = "SELECT Passphrase FROM Admin WHERE Telephone = '$user';";
 
-        // Execute the query
-        $result = mysqli_query($conn, $deleteQuery);
+        //Run the Query
+        $sql = mysqli_query($conn, $query);
 
-        // Check if the deletion was successful
-        if ($result) {
-            $message = "Service deleted successfully!";
-            $popupClass = "success-popup";
-        } else {
-            $message = "Error deleting service: " . mysqli_error($conn);
-            $popupClass = "error-popup";
+        //Pick Data From Database
+
+        if ($row = mysqli_fetch_array($sql)) {
+
+            $hashed_password = $row['Passphrase'];
+
+            if (password_verify($password, $hashed_password)) {
+                // Retrieve the seller ID from the form
+                $serviceID = $_POST["item_id"];
+                // Add your SQL query to delete the product from the database
+                $deleteQuery = "DELETE FROM Services WHERE ServiceID = $serviceID";
+
+                // Execute the query
+                $result = mysqli_query($conn, $deleteQuery);
+
+                // Check if the deletion was successful
+                if ($result) {
+                    $message = "Service deleted successfully!";
+                    $popupClass = "success-popup";
+                } else {
+                    $message = "Error deleting service: " . mysqli_error($conn);
+                    $popupClass = "error-popup";
+                }
+            } else {
+                $message = "Incorrect password! Service not deleted.";
+                $popupClass = "error-popup";
+            }
         }
     }
 ?>
@@ -532,10 +573,7 @@ if ($operator != 'admin') {
                                     <td> <?php echo $row['Category']; ?> </td>
                                     <td> <?php echo $row['Seller']; ?> </td>
                                     <td>
-                                        <form method="post" action="deleteProduct.php">
-                                            <input type="hidden" name="product_id" value="<?php echo $row['ProductID']; ?>">
-                                            <button type="submit" name="del-product" style="background-color: red; color: var(--dark-color); padding: .5rem 1rem;">Del</button>
-                                        </form>
+                                        <button type="button" style="background-color: red; color: var(--dark-color); padding: .5rem 1rem;" onclick="confirmDelete(<?php echo $row['ProductID']; ?>)">Del</button>
                                     </td>
                                 </tr>
 
@@ -584,10 +622,7 @@ if ($operator != 'admin') {
                                     <td> <?php echo $row['Price']; ?> </td>
                                     <td> <?php echo $row['Seller']; ?> </td>
                                     <td>
-                                        <form method="post" action="deleteProduct.php">
-                                            <input type="hidden" name="service_id" value="<?php echo $row['ServiceID']; ?>">
-                                            <button type="submit" name="del-service" style="background-color: red; color: var(--dark-color); padding: .5rem 1rem;">Del</button>
-                                        </form>
+                                        <button type="button" style="background-color: red; color: var(--dark-color); padding: .5rem 1rem;" onclick="confirmDelete(<?php echo $row['ServiceID']; ?>)">Del</button>
                                     </td>
                                 </tr>
                             <?php
@@ -614,13 +649,14 @@ if ($operator != 'admin') {
                             <p>We deal with marketing businesses at a commission paid per month.</p>
                             <h6 class="title footer-title" id="contact-us">Our Contacts</h6>
                             <ul class="list footer-list">
-                                <li class="list-item">Call: <a href="https://tel: +254104945962" class="link">0104945962</a>
+                                <li class="list-item">Call: <a href="tel:+254104945962" class="link">0104945962</a>
                                 </li>
-                                <li class="list-item">SMS: <a href="https://sms: +254769320092" class="link">0769320092</a>
+                                <li class="list-item">SMS: <a href="sms:+254769320092" class="link">0769320092</a>
                                 </li>
-                                <li class="list-item">WhatsApp: <a href="https://wa.me/+25479463900" class="link">AlphaTech
+                                <li class="list-item">WhatsApp: <a href="https://wa.me/+25479463900" class="link" target="_blank">AlphaTech
                                         Solutions</a></li>
-                                <li class="list-item"> Email : <a href="mailto:sangera@kabarak.ac.ke?bcc=lukelasharon02@gmail.com,maxwellwafula884@gmail.com,sharif@kabarak.ac.ke" class="link">info@kabub2b.com</a></li>
+                                <li class="list-item"> Email : <a href="mailto:sangera@kabarak.ac.ke?bcc=lukelasharon02@gmail.com,maxwellwafula884@gmail.com,sharif@kabarak.ac.ke" class="link" target="_blank">info@kabub2b.com</a>
+                                </li>
                             </ul>
                             <ul class="list social-media">
                                 <li class="list-item">
@@ -671,8 +707,26 @@ if ($operator != 'admin') {
                 </div>
             </footer>
         </div>
+
+
+        <form id="deleteForm" method="post" action="deleteProduct.php">
+            <input type="hidden" name="item_id" id="item_id">
+            <input type="hidden" name="password" id="password">
+        </form>
+
+
+        <script type="text/javascript">
+            function confirmDelete(itemId) {
+                var password = prompt("Please enter your password to confirm deletion:");
+                if (password !== null) {
+                    // If password is entered, submit the form with the password and item ID
+                    document.getElementById('password').value = password;
+                    document.getElementById('item_id').value = itemId;
+                    document.getElementById('deleteForm').submit();
+                }
+            }
+        </script>
     </body>
-    <script src="./index.js"></script>
     <script>
         function closePopup() {
             document.getElementById('popup').style.display = 'none';
@@ -686,6 +740,7 @@ if ($operator != 'admin') {
             }
         };
     </script>
+    <script src="./index.js"></script>
 
     </html>
 <?php

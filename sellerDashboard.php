@@ -475,10 +475,13 @@ if ($operator != 'seller') {
                     <a href="./setPassword.php" class="link"><i class="#"></i>Update Password</a>
                 </li>
                 <li class="menu-item">
-                    <a href="#" class="link"><i class="#"></i>Update My Contacts</a>
+                    <a href="https://wa.me/+254797630228" class="link"><i class="#"></i>Upload items</a>
                 </li>
                 <li class="menu-item">
-                    <a href="#" class="link"><i class="#"></i>Change Business Name</a>
+                    <a href="./my_profile.php#contacts" class="link"><i class="#"></i>Update My Contacts</a>
+                </li>
+                <li class="menu-item">
+                    <a href="./my_profile.php#business-name" class="link"><i class="#"></i>Change Business Name</a>
                 </li>
                 <li class="menu-item last-item">
                     <a href="./logout.php" class="link"><i class="#"></i>Logout</a>
@@ -586,6 +589,26 @@ if ($operator != 'seller') {
                     </table>
                 </div>
             </section>
+            <!--NewsLetter-->
+            <section class="newsletter section">
+                <div class="container">
+                    <h2 class="title section-title" data-name="Newsletter">Newsletter</h2>
+                    <div class="form-container-inner">
+                        <h6 class="title newsletter-title">Subscribe to Kabarak<span class="tm">B2B</span></h6>
+                        <p class="newsletter-description">
+                            Get our latest updates as soon as they are released.
+                        </p>
+                        <form action="./subscribe.php" class="form" method="post">
+                            <input type="email" name="email" class="form-input" placeholder="Enter your email address">
+                            <input type="hidden" name="page" value="sellerDashboard.php">
+                            <button class="btn form-btn" type="submit" name="subscribe">
+                                <i class="ri-mail-send-line"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
             <!--Footer-->
             <footer class="footer section" id="about-us">
                 <div class="about-info">
@@ -603,13 +626,14 @@ if ($operator != 'seller') {
                             <p>We deal with marketing businesses at a commission paid per month.</p>
                             <h6 class="title footer-title" id="contact-us">Our Contacts</h6>
                             <ul class="list footer-list">
-                                <li class="list-item">Call: <a href="https://tel: +254104945962" class="link">0104945962</a>
+                                <li class="list-item">Call: <a href="tel:+254104945962" class="link">0104945962</a>
                                 </li>
-                                <li class="list-item">SMS: <a href="https://sms: +254769320092" class="link">0769320092</a>
+                                <li class="list-item">SMS: <a href="sms:+254769320092" class="link">0769320092</a>
                                 </li>
-                                <li class="list-item">WhatsApp: <a href="https://wa.me/+25479463900" class="link">AlphaTech
+                                <li class="list-item">WhatsApp: <a href="https://wa.me/+25479463900" class="link" target="_blank">AlphaTech
                                         Solutions</a></li>
-                                <li class="list-item"> Email : <a href="mailto:sangera@kabarak.ac.ke?bcc=lukelasharon02@gmail.com,maxwellwafula884@gmail.com,sharif@kabarak.ac.ke" class="link">info@kabub2b.com</a></li>
+                                <li class="list-item"> Email : <a href="mailto:sangera@kabarak.ac.ke?bcc=lukelasharon02@gmail.com,maxwellwafula884@gmail.com,sharif@kabarak.ac.ke" class="link" target="_blank">info@kabub2b.com</a>
+                                </li>
                             </ul>
                             <ul class="list social-media">
                                 <li class="list-item">
@@ -630,49 +654,64 @@ if ($operator != 'seller') {
                     <div>
                         <h6 class="title footer-title">Products</h6>
                         <ul class="list footer-list">
-                            <li class="list-item"><a href="./post.php#clothing&apparels?operator=<?php echo urlencode($_SESSION['operator']); ?>" class="link">Clothing & Apparels</a></li>
-                            <li class="list-item"><a href="./post.php#furniture?operator=<?php echo urlencode($_SESSION['operator']); ?>" class="link">Furniture</a></li>
-                            <li class="list-item"><a href="./post.php#gas-services?operator=<?php echo urlencode($_SESSION['operator']); ?>" class="link">Gas Cylinders</a></li>
-                            <li class="list-item"><a href="./post.php#beauty&cosmetic?operator=<?php echo urlencode($_SESSION['operator']); ?>" class="link">Beauty & Cosmetics</a></li>
-                            <li class="list-item"><a href="./post.php#bookshop&stationary?operator=<?php echo urlencode($_SESSION['operator']); ?>" class="link">BookShops & Stationaries</a></li>
-                            <li class="list-item"><a href="./post.php#general-stores?operator=<?php echo urlencode($_SESSION['operator']); ?>" class="link">General Stores</a></li>
-                            <li class="list-item"><a href="./post.php#households?operator=<?php echo urlencode($_SESSION['operator']); ?>" class="link">HouseHolds</a></li>
-                            <li class="list-item"><a href="./post.php#hardware?operator=<?php echo urlencode($_SESSION['operator']); ?>" class="link">Hardware</a></li>
-                            <li class="list-item"><a href="./post.php#beddings?operator=<?php echo urlencode($_SESSION['operator']); ?>" class="link">Beddings</a></li>
-                            <li class="list-item"><a href="./post.php#electronics?operator=<?php echo urlencode($_SESSION['operator']); ?>" class="link">Electronics</a></li>
+                            <li class="list-item"><a href="./post.php?%23clothing&apparels&amp;operator=seller" class="link">Clothing & Apparels</a>
+                            </li>
+                            <li class="list-item"><a href="./post.php?%23furniture&amp;operator=seller" class="link">Furniture</a></li>
+                            <li class="list-item"><a href="./post.php?%23gas-services&amp;operator=seller" class="link">Gas
+                                    Cylinders</a></li>
+                            <li class="list-item"><a href="./post.php?%23health&amp;operator=seller" class="link">Health
+                                    Services</a></li>
+                            <li class="list-item"><a href="./post.php?%23beauty&cosmetic&amp;operator=seller" class="link">Beauty
+                                    & Cosmetics</a></li>
+                            <li class="list-item"><a href="./post.php?%23bookshop&stationary&amp;operator=seller" class="link">BookShops &
+                                    Stationaries</a></li>
+                            <li class="list-item"><a href="./post.php?%23general-stores&amp;operator=seller" class="link">General
+                                    Stores</a></li>
+                            <li class="list-item"><a href="./post.php?%23households&amp;operator=seller" class="link">HouseHolds</a></li>
+                            <li class="list-item"><a href="./post.php?%23hardware&amp;operator=seller" class="link">Hardware</a>
+                            </li>
+                            <li class="list-item"><a href="./post.php?%23beddings&amp;operator=seller" class="link">Beddings</a>
+                            </li>
+                            <li class="list-item"><a href="./post.php?%23electronics&amp;operator=seller" class="link">Electronics</a></li>
                         </ul>
                     </div>
 
                     <div>
                         <h6 class="title footer-title">Services</h6>
                         <ul class="list footer-list">
-                            <li class="list-item"><a href="./post.php#health?operator=<?php echo urlencode($_SESSION['operator']); ?>" class="link">Health</a></li>
-                            <li class="list-item"><a href="./post.php#haircut?operator=<?php echo urlencode($_SESSION['operator']); ?>" class="link">Haircut</a></li>
-                            <li class="list-item"><a href="./post.php#hairdressing?operator=<?php echo urlencode($_SESSION['operator']); ?>" class="link">Hairdressing</a></li>
-                            <li class="list-item"><a href="./post.php#gas-services?operator=<?php echo urlencode($_SESSION['operator']); ?>" class="link">Gas Refill</a></li>
-                            <li class="list-item"><a href="./post.php#haircut?operator=<?php echo urlencode($_SESSION['operator']); ?>" class="link">Beddings</a></li>
-                            <li class="list-item"><a href="./post.php#electronics-repair?operator=<?php echo urlencode($_SESSION['operator']); ?>" class="link">Electronics Repair</a></li>
-                            <li class="list-item"><a href="./post.php#shoe-repair?operator=<?php echo urlencode($_SESSION['operator']); ?>" class="link">Shoe Repair</a></li>
-                            <li class="list-item"><a href="./post.php#carrier-services?operator=<?php echo urlencode($_SESSION['operator']); ?>" class="link">Carrier Services</a></li>
+                            <li class="list-item"><a href="./post.php?%23health&amp;operator=seller" class="link">Health</a></li>
+                            <li class="list-item"><a href="./post.php?%23haircut&amp;operator=seller" class="link">Haircut</a>
+                            </li>
+                            <li class="list-item"><a href="./post.php?%23hairdressing&amp;operator=seller" class="link">Hairdressing</a></li>
+                            <li class="list-item"><a href="./post.php?%23gas-services&amp;operator=seller" class="link">Gas
+                                    Refill</a></li>
+                            <li class="list-item"><a href="./post.php?%23haircut&amp;operator=seller" class="link">Beddings</a>
+                            </li>
+                            <li class="list-item"><a href="./post.php?%23electronics-repair&amp;operator=seller" class="link">Electronics Repair</a>
+                            </li>
+                            <li class="list-item"><a href="./post.php?%23shoe-repair&amp;operator=seller" class="link">Shoe
+                                    Repair</a></li>
+                            <li class="list-item"><a href="./post.php?%23carrier-services&amp;operator=seller" class="link">Carrier Services</a></li>
                         </ul>
                     </div>
                 </div>
             </footer>
         </div>
+
+        <script>
+            function toggleSidebar() {
+                const sidebar = document.getElementById('sidebar');
+                const content = document.getElementById('content');
+
+                // Toggle the 'collapsed' class on the sidebar
+                sidebar.classList.toggle('collapsed');
+
+                // Toggle the 'expanded' class on the content
+                content.classList.toggle('expanded');
+            }
+        </script>
     </body>
     <script src="./index.js"></script>
-    <script>
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const content = document.getElementById('content');
-
-            // Toggle the 'collapsed' class on the sidebar
-            sidebar.classList.toggle('collapsed');
-
-            // Toggle the 'expanded' class on the content
-            content.classList.toggle('expanded');
-        }
-    </script>
 
     </html>
 <?php

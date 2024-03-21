@@ -59,7 +59,7 @@ if (isset($_POST['register'])) {
                 $_SESSION['firstFormSubmitted'] = true;
 
 
-                $message = "You have successfully been registered as ".$first_name." ".$last_name;
+                $message = "You have successfully been registered as " . $first_name . " " . $last_name;
                 $popupClass = "success-popup";
 
                 header('Location: setPassword.php');
@@ -85,14 +85,14 @@ if (isset($_POST['register'])) {
             $_SESSION['user'] = $telephone;
 
 
-            $message = "You have successfully been registered as ".$first_name." ".$last_name;
+            $message = "You have successfully been registered as " . $first_name . " " . $last_name;
             $popupClass = "success-popup";
 
 
             header('Location: setPassword.php');
             exit();
         } else {
-            
+
             $message = "Error Submitting to the database Contact Admin for Assistance";
             $popupClass = "error-popup";
         }
@@ -158,9 +158,11 @@ ob_end_flush();
             width: 40%;
             color: var(--dark-color);
         }
-        .select option{
+
+        .select option {
             background-color: transparent;
         }
+
         .btn {
             padding: .5rem 2rem;
             float: right;
@@ -243,12 +245,14 @@ ob_end_flush();
                 height: 100vh;
                 font-size: var(--font-size-small);
             }
+
             .popup {
-            top: 0;
-            left: 0;
-            margin: 25% 10% ;
-            width: 80%;
-        }
+                top: 0;
+                left: 0;
+                margin: 25% 10%;
+                width: 80%;
+            }
+
             .inputs {
                 margin: .5rem 1rem;
             }
@@ -288,12 +292,12 @@ ob_end_flush();
                 </div>
                 <div class="inputs">
                     <label for="first-name">First Name:</label> <br>
-                    <input type="text" name="first-name" required class="myform-input" autocomplete="on" autofocus>
+                    <input type="text" name="first-name" required class="myform-input" autocomplete="on" autofocus pattern="[A-Za-z]+" title="Please enter a name with alphabets only">
                 </div>
 
                 <div class="inputs">
                     <label for="last-name">Last Name:</label> <br>
-                    <input type="text" name="last-name" required class="myform-input" autocomplete="on" autofocus>
+                    <input type="text" name="last-name" required class="myform-input" autocomplete="on" autofocus pattern="[A-Za-z]+" title="Please enter a name with alphabets only">
                 </div>
 
                 <div class="inputs">
@@ -303,10 +307,10 @@ ob_end_flush();
 
                     <input type="radio" name="gender" value="other" id="other">Other
                 </div>
-                
+
                 <div class="inputs">
                     <label for="telephone">Telephone</label><br>
-                    <input type="tel" name="telephone" id="telephone" class="myform-input">
+                    <input type="tel" minlength="10" maxlength="13" name="telephone" id="telephone" class="myform-input" pattern="[0-9]{10}" title="Please a telephone number only contains numeric values" placeholder="0729......">
                 </div>
 
                 <div class="inputs">
@@ -316,7 +320,7 @@ ob_end_flush();
 
                 <div class="inputs">
                     <label for="telephone">WhatsApp Number:</label><br>
-                    <input type="tel" name="whatsapp" id="whatsapp" class="myform-input">
+                    <input type="tel" minlength="10" maxlength="13" name="whatsapp" id="whatsapp" class="myform-input" pattern="[0-9]{10}" title="Please a telephone number only contains numeric values" placeholder="0729......">
                 </div>
                 <div class="inputs">
                     <label for="business-type">Business Type:</label>
@@ -353,19 +357,20 @@ ob_end_flush();
             </form>
         </div>
     </div>
+    <script>
+        function closePopup() {
+            document.getElementById('popup').style.display = 'none';
+        }
+
+        // Display the popup on page load if it's not empty
+        window.onload = function() {
+            var popupMessage = "<?php echo $message; ?>";
+            if (popupMessage !== "") {
+                document.getElementById('popup').style.display = 'flex';
+            }
+        };
+    </script>
 
 </body>
-<script>
-    function closePopup() {
-        document.getElementById('popup').style.display = 'none';
-    }
 
-    // Display the popup on page load if it's not empty
-    window.onload = function() {
-        var popupMessage = "<?php echo $message; ?>";
-        if (popupMessage !== "") {
-            document.getElementById('popup').style.display = 'flex';
-        }
-    };
-</script>
 </html>

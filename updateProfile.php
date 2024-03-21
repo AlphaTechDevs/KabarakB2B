@@ -38,6 +38,10 @@ if ($operator != 'admin') {
         $whatsapp_number = (substr($whatsapp_number, 0, 1) == "0") ? preg_replace("/^0/", "+254", $whatsapp_number) : $whatsapp_number;
         $whatsapp_number = (substr($whatsapp_number, 0, 1) == "7") ? "+254{$whatsapp_number}" : $whatsapp_number;
 
+        $gender = ucfirst(strtolower($gender));
+
+        if(($gender == 'Male') || ($gender=='Female')|| ($gender == 'Other')){
+
         #Update the sellers table and redirect to send OTP
         $query = "UPDATE Sellers SET SellerFirstName = '$first_name', SellerLastName = '$last_name', Gender = '$gender',Telephone = '$telephone', Email = '$email',WhatsAppNumber = '$whatsapp_number',BusinessType = '$business_type',BusinessName = '$business_name' WHERE SellerID = '$sellerID'";
         $sql = mysqli_query($conn, $query);
@@ -51,6 +55,7 @@ if ($operator != 'admin') {
             $popupClass = "error-popup";
         }
     }
+}
 ?>
 
     <!DOCTYPE html>
@@ -555,19 +560,19 @@ if ($operator != 'admin') {
                                     <form method="post" action="updateProfile.php" class="form">
                                         <input type="hidden" name="seller_id" value="<?php echo $row['SellerID']; ?>" readonly>
 
-                                        <td> <input type="text" name="first_name" value="<?php echo $row['SellerFirstName']; ?>"> </td>
+                                        <td> <input type="text" name="first_name" value="<?php echo $row['SellerFirstName']; ?>" pattern="[A-Za-z]+" title="Please enter a name with alphabets only"> </td>
 
-                                        <td> <input type="text" name="last_name" value="<?php echo $row['SellerLastName']; ?>"> </td>
+                                        <td> <input type="text" name="last_name" value="<?php echo $row['SellerLastName']; ?>" pattern="[A-Za-z]+" title="Please enter a name with alphabets only"> </td>
 
-                                        <td> <input type="text" name="gender" value="<?php echo $row['Gender']; ?>"> </td>
+                                        <td> <input type="text" name="gender" value="<?php echo $row['Gender']; ?>" minlength="4" maxlength="8" pattern="[A-Za-z]+" title="Please enter a name with alphabets only"> </td>
 
-                                        <td> <input type="tel" name="telephone" value="<?php echo $row['Telephone']; ?> " maxlength="15"></td>
+                                        <td> <input type="tel" name="telephone" value="<?php echo $row['Telephone']; ?> " minlength="10" maxlength="13"  pattern="\+[0-9]{12}" title="Please a phone number should only contain numeric values"></td>
 
-                                        <td> <input type="tel" name="whatsapp" value="<?php echo $row['WhatsAppNumber']; ?>" maxlength="15"> </td>
+                                        <td> <input type="tel" name="whatsapp" value="<?php echo $row['WhatsAppNumber']; ?>" minlength="10" maxlength="13" pattern="\+[0-9]{12}" title="Please a phone number should only contain numeric values"> </td>
 
                                         <td> <input type="email" name="email" value="<?php echo $row['Email']; ?>"> </td>
 
-                                        <td> <input type="text" name="business_type" value="<?php echo $row['BusinessType']; ?>"> </td>
+                                        <td> <input type="text" name="business_type" value="<?php echo $row['BusinessType']; ?>"  pattern="[A-Za-z\s]+" title="Please enter a name with alphabets only"> </td>
 
                                         <td> <input type="text" name="business_name" value="<?php echo $row['BusinessName']; ?>"> </td>
                                         <td style="padding: .1rem .5rem;">
@@ -600,9 +605,9 @@ if ($operator != 'admin') {
                             <p>We deal with marketing businesses at a commission paid per month.</p>
                             <h6 class="title footer-title" id="contact-us">Our Contacts</h6>
                             <ul class="list footer-list">
-                                <li class="list-item">Call: <a href="https://tel: +254104945962" class="link">0104945962</a>
+                                <li class="list-item">Call: <a href="https://tel:+254104945962" class="link">0104945962</a>
                                 </li>
-                                <li class="list-item">SMS: <a href="https://sms: +254769320092" class="link">0769320092</a>
+                                <li class="list-item">SMS: <a href="https://sms:+254769320092" class="link">0769320092</a>
                                 </li>
                                 <li class="list-item">WhatsApp: <a href="https://wa.me/+25479463900" class="link">AlphaTech
                                         Solutions</a></li>

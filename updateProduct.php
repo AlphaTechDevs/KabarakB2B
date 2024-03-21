@@ -579,7 +579,7 @@ if ($operator != 'admin') {
                                     <form method="post" action="updateProduct.php" enctype="multipart/form-data" class="form">
                                         <input type="hidden" name="product_id" value="<?php echo $row['ProductID']; ?>">
                                         <td> <input type="text" name="product_name" value="<?php echo $row['ProductName']; ?>"></td>
-                                        <td> <input type="text" name="price" value="<?php echo $row['Price']; ?> "> </td>
+                                        <td> <input type="number" name="price" value="<?php echo $row['Price']; ?> "> </td>
                                         <td> <input type="text" name="brand" value="<?php echo $row['Brand']; ?>"> </td>
                                         <td> <input type="text" name="category" value="<?php echo $row['Category']; ?>"> </td>
                                         <td class="images"> <input type="file" name="image" accept="*/image">
@@ -676,13 +676,14 @@ if ($operator != 'admin') {
                             <p>We deal with marketing businesses at a commission paid per month.</p>
                             <h6 class="title footer-title" id="contact-us">Our Contacts</h6>
                             <ul class="list footer-list">
-                                <li class="list-item">Call: <a href="https://tel: +254104945962" class="link">0104945962</a>
+                                <li class="list-item">Call: <a href="tel:+254104945962" class="link">0104945962</a>
                                 </li>
-                                <li class="list-item">SMS: <a href="https://sms: +254769320092" class="link">0769320092</a>
+                                <li class="list-item">SMS: <a href="sms:+254769320092" class="link">0769320092</a>
                                 </li>
-                                <li class="list-item">WhatsApp: <a href="https://wa.me/+25479463900" class="link">AlphaTech
+                                <li class="list-item">WhatsApp: <a href="https://wa.me/+25479463900" class="link" target="_blank">AlphaTech
                                         Solutions</a></li>
-                                <li class="list-item"> Email : <a href="mailto:sangera@kabarak.ac.ke?bcc=lukelasharon02@gmail.com,maxwellwafula884@gmail.com,sharif@kabarak.ac.ke" class="link">info@kabub2b.com</a></li>
+                                <li class="list-item"> Email : <a href="mailto:sangera@kabarak.ac.ke?bcc=lukelasharon02@gmail.com,maxwellwafula884@gmail.com,sharif@kabarak.ac.ke" class="link" target="_blank">info@kabub2b.com</a>
+                                </li>
                             </ul>
                             <ul class="list social-media">
                                 <li class="list-item">

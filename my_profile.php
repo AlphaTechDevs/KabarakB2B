@@ -5,11 +5,8 @@ ini_set('display_errors', 1);
 session_start();
 $operator = $_SESSION['operator'];
 
-if (($operator != 'admin') || ($operator != 'seller')) {
+if (($operator == 'admin') || ($operator == 'seller')) {
 
-    header('Location: index.html');
-    exit();
-} else {
 
     include_once 'connect.php';
 
@@ -607,11 +604,6 @@ if (($operator != 'admin') || ($operator != 'seller')) {
                                 <div class="section-title">
                                     <h4 class="title">Basic Details</h4>
                                 </div>
-                                <div class="profile-photo-container">
-                                    <div class="profile-photo">
-                                        <img src="<?php echo $row['profile_path']; ?>" alt="<?php echo $row['SellerFirstName']; ?>" class="profile-image">
-                                    </div>
-                                </div>
                                 <div class="seller-info-container d-grid">
                                     <div class="inputs">
                                         <label for="f-name">First Name</label>
@@ -633,14 +625,14 @@ if (($operator != 'admin') || ($operator != 'seller')) {
                                 <div class="section-title">
                                     <h4 class="title">Contacts</h4>
                                 </div>
-                                <div class="seller-contact-info-container container d-grid">
+                                <div class="seller-contact-info-container container d-grid" id="contacts">
                                     <div class="inputs">
                                         <label for="telephone">Telephone</label>
-                                        <input type="tel" name="telephone" id="telephone" value="<?php echo $row['Telephone']; ?>">
+                                        <input type="tel" name="telephone" id="telephone" value="<?php echo $row['Telephone']; ?>" minlength="10" maxlength="13">
                                     </div>
                                     <div class="inputs">
                                         <label for="whatsapp">WhatsApp Number</label>
-                                        <input type="tel" name="whatsapp" id="whatsapp" value="<?php echo $row['WhatsAppNumber']; ?>">
+                                        <input type="tel" name="whatsapp" id="whatsapp" value="<?php echo $row['WhatsAppNumber']; ?>" minlength="10" maxlength="13">
                                     </div>
                                     <div class="inputs">
                                         <label for="email">Email Address</label>
@@ -685,11 +677,6 @@ if (($operator != 'admin') || ($operator != 'seller')) {
                                 <div class="section-title">
                                     <h4 class="title">Basic Details</h4>
                                 </div>
-                                <div class="profile-photo-container">
-                                    <div class="profile-photo">
-                                        <img src="<?php echo $row['profile_path']; ?>" alt="<?php echo $row['AdminFirstName']; ?>" class="profile-image">
-                                    </div>
-                                </div>
                                 <div class="basic-info-container container d-grid">
                                     <div class="inputs">
                                         <label for="f-name">First Name</label>
@@ -710,7 +697,7 @@ if (($operator != 'admin') || ($operator != 'seller')) {
                                 <div class="contact-info-container container d-grid">
                                     <div class="inputs">
                                         <label for="telephone">Telephone</label>
-                                        <input type="tel" name="telephone" id="telephone" value="<?php echo $row['Telephone']; ?>">
+                                        <input type="tel" name="telephone" id="telephone" minlength="10" maxlength="13" value="<?php echo $row['Telephone']; ?>">
                                     </div>
                                     <div class="inputs">
                                         <label for="email">Email Address</label>
@@ -770,13 +757,14 @@ if (($operator != 'admin') || ($operator != 'seller')) {
                             <p>We deal with marketing businesses at a commission paid per month.</p>
                             <h6 class="title footer-title" id="contact-us">Our Contacts</h6>
                             <ul class="list footer-list">
-                                <li class="list-item">Call: <a href="https://tel: +254104945962" class="link">0104945962</a>
+                                <li class="list-item">Call: <a href="tel:+254104945962" class="link">0104945962</a>
                                 </li>
-                                <li class="list-item">SMS: <a href="https://sms: +254769320092" class="link">0769320092</a>
+                                <li class="list-item">SMS: <a href="sms:+254769320092" class="link">0769320092</a>
                                 </li>
-                                <li class="list-item">WhatsApp: <a href="https://wa.me/+25479463900" class="link">AlphaTech
+                                <li class="list-item">WhatsApp: <a href="https://wa.me/+25479463900" class="link" target="_blank">AlphaTech
                                         Solutions</a></li>
-                                <li class="list-item"> Email : <a href="mailto:sangera@kabarak.ac.ke?bcc=lukelasharon02@gmail.com,maxwellwafula884@gmail.com,sharif@kabarak.ac.ke" class="link">info@kabub2b.com</a></li>
+                                <li class="list-item"> Email : <a href="mailto:sangera@kabarak.ac.ke?bcc=lukelasharon02@gmail.com,maxwellwafula884@gmail.com,sharif@kabarak.ac.ke" class="link" target="_blank">info@kabub2b.com</a>
+                                </li>
                             </ul>
                             <ul class="list social-media">
                                 <li class="list-item">
@@ -786,7 +774,7 @@ if (($operator != 'admin') || ($operator != 'seller')) {
                                     <a href="" class="link"><i class="ri-instagram-line"></i></a>
                                 </li>
                                 <li class="list-item">
-                                    <a href="" class="link"><i class="ri-telegram-line"></i></a>
+                                    <a href="https://t.me/+254797630228" class="link"><i class="ri-telegram-line"></i></a>
                                 </li>
                             </ul>
                             <span class="copyright-notice">&copy;2024 KabarakB2B. All rights reserved. Made by AlphaTech
@@ -892,5 +880,8 @@ if (($operator != 'admin') || ($operator != 'seller')) {
 
     </html>
 <?php
+} else {
+    header('Location: index.html');
+    exit();
 }
 ?>

@@ -7,7 +7,7 @@ header("Cache-Control: max-age=604800, public");
 
 session_start();
 
-$operator = $_SESSION['operator'] ?? 'buyer' ;
+$operator = $_SESSION['operator'] ?? 'buyer';
 
 include_once 'connect.php';
 
@@ -178,7 +178,7 @@ while ($row = mysqli_fetch_assoc($sql)) {
                     <?php
                     if ($operator === "seller") {
                     ?>
-                        <li class="menu-item"><a href="./index.html#" class="link">Home</a></li>
+                        <li class="menu-item"><a href="./sellerDashboard.php" class="link">Home</a></li>
                         <li class="menu-item"><a href="./index.html#contact-us" class="link">Contact us</a></li>
                         <li class="menu-item"><a href="./index.html#about-us" class="link">About us</a></li>
                         <li class="menu-item"><a href="./logout.php" class="link">Logout</a></li>
@@ -203,7 +203,17 @@ while ($row = mysqli_fetch_assoc($sql)) {
             <div class="menu">
                 <ul class="sidebar-items">
                     <!--Hidden on large screens-->
-                    <li class="menu-item"><a href="./index.html" class="link item-hidden">Home</a></li>
+                    <?php
+                    if ($operator === "seller") {
+                    ?>
+                        <li class="menu-item"><a href="./sellerDashboard.php" class="link">Home</a></li>
+                    <?php
+                    } else {
+                    ?>
+                        <li class="menu-item"><a href="./index.html#" class="link">Home</a></li>
+                    <?php
+                    }
+                    ?>
                     <li class="menu-item"><a href="./index.html#contact-us" class="link item-hidden">Contact us</a></li>
                     <li class="menu-item"><a href="./index.html#about-us" class="link item-hidden">About us</a></li>
                     <li class="menu-item"><a href="./post.php#clothing&apparels" class="link">Clothing & Apparels</a>
@@ -401,9 +411,10 @@ while ($row = mysqli_fetch_assoc($sql)) {
                 <p class="newsletter-description">
                     Get our latest updates as soon as they are released.
                 </p>
-                <form action="" class="form">
-                    <input type="text" class="form-input" placeholder="Enter your email address">
-                    <button class="btn form-btn" type="submit">
+                <form action="./subscribe.php" class="form" method="post">
+                    <input type="email" name="email" class="form-input" placeholder="Enter your email address">
+                    <input type="hidden" name="page" value="contactSeller.php">
+                    <button class="btn form-btn" type="submit" name="subscribe">
                         <i class="ri-mail-send-line"></i>
                     </button>
                 </form>
@@ -423,7 +434,7 @@ while ($row = mysqli_fetch_assoc($sql)) {
                     <?php
                     if ($operator === "seller") {
                     ?>
-                        <a href="<?php echo './' . $operator . 'Dashboard.php' ?>" class="link">
+                        <a href="./sellerDashboard.php" class="link">
                             <h3 class="logo-name">Kabarak<span class="tm">B2B</span></h3>
                         </a>
                     <?php
@@ -441,13 +452,14 @@ while ($row = mysqli_fetch_assoc($sql)) {
                     <p>We deal with marketing businesses at a commission paid per month.</p>
                     <h6 class="title footer-title" id="contact-us">Our Contacts</h6>
                     <ul class="list footer-list">
-                        <li class="list-item">Call: <a href="https://tel: +254104945962" class="link">0104945962</a>
+                        <li class="list-item">Call: <a href="tel:+254104945962" class="link">0104945962</a>
                         </li>
-                        <li class="list-item">SMS: <a href="https://sms: +254769320092" class="link">0769320092</a>
+                        <li class="list-item">SMS: <a href="sms:+254769320092" class="link">0769320092</a>
                         </li>
-                        <li class="list-item">WhatsApp: <a href="https://wa.me/+25479463900" class="link">AlphaTech
+                        <li class="list-item">WhatsApp: <a href="https://wa.me/+25479463900" class="link" target="_blank">AlphaTech
                                 Solutions</a></li>
-                        <li class="list-item"> Email : <a href="mailto:sangera@kabarak.ac.ke?bcc=lukelasharon02@gmail.com,maxwellwafula884@gmail.com,sharif@kabarak.ac.ke" class="link">info@kabub2b.com</a></li>
+                        <li class="list-item"> Email : <a href="mailto:sangera@kabarak.ac.ke?bcc=lukelasharon02@gmail.com,maxwellwafula884@gmail.com,sharif@kabarak.ac.ke" class="link" target="_blank">info@kabub2b.com</a>
+                        </li>
                     </ul>
                     <ul class="list social-media">
                         <li class="list-item">
@@ -497,36 +509,37 @@ while ($row = mysqli_fetch_assoc($sql)) {
             </div>
         </div>
     </footer>
+
+    <script>
+        function showSideBar() {
+            document.querySelector('.hidden').style.display = 'block';
+            document.querySelector('.sidebar-open-btn').style.display = 'none';
+        }
+
+        function hideSideBar() {
+            document.querySelector('.hidden').style.display = 'none';
+            document.querySelector('.sidebar-open-btn').style.display = 'block';
+        }
+
+        function openWhatsApp() {
+
+            window.location.href = 'https://wa.me/<?php echo $whatsapp; ?>';
+        }
+
+        function sendEmail() {
+
+            window.location.href = 'mailto:<?php echo $email; ?>';
+        }
+
+        function makeCall() {
+
+            window.location.href = 'tel:<?php echo $telephone; ?>';
+        }
+
+        function sendSMS() {
+            window.location.href = 'sms:<?php echo $telephone; ?>';
+        }
+    </script>
 </body>
-<script>
-    function showSideBar() {
-        document.querySelector('.hidden').style.display = 'block';
-        document.querySelector('.sidebar-open-btn').style.display = 'none';
-    }
-
-    function hideSideBar() {
-        document.querySelector('.hidden').style.display = 'none';
-        document.querySelector('.sidebar-open-btn').style.display = 'block';
-    }
-
-    function openWhatsApp() {
-
-        window.location.href = 'https://wa.me/<?php echo $whatsapp; ?>';
-    }
-
-    function sendEmail() {
-
-        window.location.href = 'mailto:<?php echo $email; ?>';
-    }
-
-    function makeCall() {
-
-        window.location.href = 'tel:<?php echo $telephone; ?>';
-    }
-
-    function sendSMS() {
-        window.location.href = 'sms:<?php echo $telephone; ?>';
-    }
-</script>
 
 </html>

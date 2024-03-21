@@ -44,6 +44,9 @@ if (isset($_POST['save'])) {
             $message = "User Password updated successfully!";
             $popupClass = "success-popup";
 
+            $_SESSION['user'] = $telephone; //save for future use
+            $_SESSION['operator'] = 'seller';
+
             header('Location: sellerDashboard.php');
             exit();
         } else {
@@ -59,6 +62,9 @@ if (isset($_POST['save'])) {
             $message = "Password updated successfully!";
             $popupClass = "success-popup";
 
+            $_SESSION['user'] = $telephone; //save for future use
+            $_SESSION['operator'] = 'seller';
+
             header('Location: sellerDashboard.php');
             exit();
         } else {
@@ -72,6 +78,10 @@ if (isset($_POST['save'])) {
         if ($sql) {
             $message = "Admin Password updated successfully!";
             $popupClass = "error-popup";
+
+            $_SESSION['user'] = $telephone; //save for future use
+            $_SESSION['operator'] = 'admin';
+
             header('Location: adminDashboard.php');
             exit();
         } else {
@@ -267,12 +277,14 @@ ob_end_flush();
                 width: 100%;
                 height: 95%;
             }
+
             .popup {
-            top: 0;
-            left: 0;
-            margin: 25% 10% ;
-            width: 80%;
-        }
+                top: 0;
+                left: 0;
+                margin: 25% 10%;
+                width: 80%;
+            }
+
             .inputs {
                 margin: .5rem 1rem;
             }
@@ -301,15 +313,15 @@ ob_end_flush();
 </head>
 
 <body>
-    <!--Second form-->
     <div class="password-form-container" id="password-form-container">
-        <!-- Display the popup based on the success or error message -->
+        
         <div class="popup <?php echo $popupClass; ?>" id="popup">
             <div class="popup-message">
                 <p><?php echo $message; ?></p>
                 <button class="pop-btn" onclick="closePopup()">Close</button>
             </div>
         </div>
+
         <fieldset>
             <legend>Privacy & Security</legend>
 
@@ -318,10 +330,10 @@ ob_end_flush();
                 <div class="inputs">
                     <label for="passphrase-1">Set New Password:</label>
                     <div class="input-box">
-                        <input type="password" name="passphrase-1" id="passphrase-1" minlength="8" maxlength="15" oninput="validatePassword()" autofocus>
-                        <button class="password-toggle-btn" onclick="togglePasswordVisibility('passphrase-1')">
-                            <i class="ri-eye-line show-password-icon" id="show-password-icon-passphrase-1"></i>
-                            <i class="ri-eye-off-line hide-password-icon" id="hide-password-icon-passphrase-1"></i>
+                        <input type="password" name="passphrase-1" id="passphrase1" minlength="8" maxlength="15" oninput="validatePassword()" autofocus />
+                        <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('passphrase1')">
+                            <i class="ri-eye-line show-password-icon" id="show-password-icon-passphrase1"></i>
+                            <i class="ri-eye-off-line hide-password-icon" id="hide-password-icon-passphrase1"></i>
                         </button>
                     </div>
                 </div>
@@ -331,10 +343,10 @@ ob_end_flush();
                     <label for="passphrase-2">Confirm Password:</label>
 
                     <div class="input-box">
-                        <input type="password" name="passphrase-2" id="passphrase-2" minlength="8" maxlength="15" oninput="checkPasswordMatch()">
-                        <button class="password-toggle-btn" onclick="togglePasswordVisibility('passphrase-2')">
-                            <i class="ri-eye-line show-password-icon" id="show-password-icon-passphrase-2"></i>
-                            <i class="ri-eye-off-line hide-password-icon" id="hide-password-icon-passphrase-2"></i>
+                        <input type="password" name="passphrase-2" id="passphrase2" minlength="8" maxlength="15" oninput="checkPasswordMatch()" />
+                        <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('passphrase2')">
+                            <i class="ri-eye-line show-password-icon" id="show-password-icon-passphrase2"></i>
+                            <i class="ri-eye-off-line hide-password-icon" id="hide-password-icon-passphrase2"></i>
                         </button>
                     </div>
                 </div>
@@ -354,11 +366,7 @@ ob_end_flush();
         </fieldset>
     </div>
 </body>
-
 <!--JavaScript-->
-
-<script src="https://kit.fontawesome.com/0bbb899c9f.js" crossorigin="anonymous"></script>
-
 <script>
     //showing and hiding the password
     function togglePasswordVisibility(inputId) {
@@ -378,7 +386,7 @@ ob_end_flush();
     }
 
     function validatePassword() {
-        var password = document.getElementById("passphrase-1").value;
+        var password = document.getElementById("passphrase1").value;
 
         // Password strength validation
         var uppercaseRegex = /[A-Z]/;
@@ -415,8 +423,8 @@ ob_end_flush();
     }
 
     function checkPasswordMatch() {
-        var password1 = document.getElementById("passphrase-1").value;
-        var password2 = document.getElementById("passphrase-2").value;
+        var password1 = document.getElementById("passphrase1").value;
+        var password2 = document.getElementById("passphrase2").value;
         var passwordMatchWarning = document.getElementById("password-match-warning");
 
         if (password1 === password2) {
@@ -446,12 +454,13 @@ ob_end_flush();
 
     function processForm() {
         // After processing, show a message and redirect to the dashboard
-        document.title.innerText = 'Redirecting to user Dashboard...';
+        document.title = 'Redirecting to user Dashboard...';
         setTimeout(function() {
             // Redirect to the dashboard or another page as needed
-            document.title.innerText = '';
+            document.title = '';
         }, 3000);
     }
 </script>
+<script src="https://kit.fontawesome.com/0bbb899c9f.js" crossorigin="anonymous"></script>
 
 </html>

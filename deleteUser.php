@@ -11,22 +11,43 @@ if ($operator != 'admin') {
 } else {
     include_once 'connect.php';
 
+    $user = $_SESSION['user'];
+
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        // Retrieve the seller ID from the form
 
-        $sellerID = $_POST["seller_id"];
+        $password = $_POST["password"];
+        // Check if the password matches the admin's password
+        $query = "SELECT Passphrase FROM Admin WHERE Telephone = '$user';";
 
-        $deleteQuery = "DELETE FROM Sellers WHERE SellerID = $sellerID";
+        //Run the Query
+        $sql = mysqli_query($conn, $query);
 
-        $result = mysqli_query($conn, $deleteQuery);
+        //Pick Data From Database
 
-        // Check if the deletion was successful
-        if ($result) {
-            $message = "Seller deleted successfully!";
-            $popupClass = "success-popup";
-        } else {
-            $message = "Error deleting Seller: " . mysqli_error($conn);
-            $popupClass = "error-popup";
+        if ($row = mysqli_fetch_array($sql)) {
+
+            $hashed_password = $row['Passphrase'];
+
+            if (password_verify($password, $hashed_password)) {
+                // Retrieve the seller ID from the form
+                $sellerID = $_POST["seller_id"];
+
+                $deleteQuery = "DELETE FROM Sellers WHERE SellerID = $sellerID";
+
+                $result = mysqli_query($conn, $deleteQuery);
+
+                // Check if the deletion was successful
+                if ($result) {
+                    $message = "Seller deleted successfully!";
+                    $popupClass = "success-popup";
+                } else {
+                    $message = "Error deleting Seller: " . mysqli_error($conn);
+                    $popupClass = "error-popup";
+                }
+            } else {
+                $message = "Incorrect password! User not deleted.";
+                $popupClass = "error-popup";
+            }
         }
     }
 ?>
@@ -516,10 +537,7 @@ if ($operator != 'admin') {
                                     <td> <?php echo $row['BusinessType']; ?> </td>
                                     <td> <?php echo $row['BusinessName']; ?> </td>
                                     <td>
-                                        <form method="post" action="deleteUser.php">
-                                            <input type="hidden" name="seller_id" value="<?php echo $row['SellerID']; ?>">
-                                            <button type="submit" style="background-color: red; color: var(--dark-color); padding: .5rem 1rem;">Del</button>
-                                        </form>
+                                        <button type="button" style="background-color: red; color: var(--dark-color); padding: .5rem 1rem;" onclick="confirmDelete(<?php echo $row['SellerID']; ?>)">Del</button>
                                     </td>
                                 </tr>
 
@@ -546,13 +564,14 @@ if ($operator != 'admin') {
                             <p>We deal with marketing businesses at a commission paid per month.</p>
                             <h6 class="title footer-title" id="contact-us">Our Contacts</h6>
                             <ul class="list footer-list">
-                                <li class="list-item">Call: <a href="https://tel: +254104945962" class="link">0104945962</a>
+                                <li class="list-item">Call: <a href="tel:+254104945962" class="link">0104945962</a>
                                 </li>
-                                <li class="list-item">SMS: <a href="https://sms: +254769320092" class="link">0769320092</a>
+                                <li class="list-item">SMS: <a href="sms:+254769320092" class="link">0769320092</a>
                                 </li>
-                                <li class="list-item">WhatsApp: <a href="https://wa.me/+25479463900" class="link">AlphaTech
+                                <li class="list-item">WhatsApp: <a href="https://wa.me/+25479463900" class="link" target="_blank">AlphaTech
                                         Solutions</a></li>
-                                <li class="list-item"> Email : <a href="mailto:sangera@kabarak.ac.ke?bcc=lukelasharon02@gmail.com,maxwellwafula884@gmail.com,sharif@kabarak.ac.ke" class="link">info@kabub2b.com</a></li>
+                                <li class="list-item"> Email : <a href="mailto:sangera@kabarak.ac.ke?bcc=lukelasharon02@gmail.com,maxwellwafula884@gmail.com,sharif@kabarak.ac.ke" class="link" target="_blank">info@kabub2b.com</a>
+                                </li>
                             </ul>
                             <ul class="list social-media">
                                 <li class="list-item">
@@ -603,8 +622,23 @@ if ($operator != 'admin') {
                 </div>
             </footer>
         </div>
+
+        <form id="deleteForm" method="post" action="deleteUser.php">
+            <input type="hidden" name="seller_id" id="seller_id">
+            <input type="hidden" name="password" id="password">
+        </form>
+        <script type="text/javascript">
+            function confirmDelete(sellerId) {
+                var password = prompt("Please enter your password to confirm deletion:");
+                if (password !== null) {
+                    // If password is entered, submit the form with the password and seller ID
+                    document.getElementById('password').value = password;
+                    document.getElementById('seller_id').value = sellerId;
+                    document.getElementById('deleteForm').submit();
+                }
+            }
+        </script>
     </body>
-    <script src="./index.js"></script>
     <script>
         function closePopup() {
             document.getElementById('popup').style.display = 'none';
@@ -618,6 +652,7 @@ if ($operator != 'admin') {
             }
         };
     </script>
+    <script src="./index.js"></script>
 
     </html>
 <?php
