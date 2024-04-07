@@ -32,14 +32,25 @@ if ($operator != 'admin') {
                 // Retrieve the seller ID from the form
                 $sellerID = $_POST["seller_id"];
 
-                $deleteQuery = "DELETE FROM Sellers WHERE SellerID = $sellerID";
+                // Add the user to deleted users database
 
-                $result = mysqli_query($conn, $deleteQuery);
+                $copyQuery = "INSERT INTO DeletedUsers SELECT * FROM Sellers WHERE SellerID = '$sellerID';";
+                $sql = mysqli_query($conn, $copyQuery);
 
-                // Check if the deletion was successful
-                if ($result) {
-                    $message = "Seller deleted successfully!";
-                    $popupClass = "success-popup";
+                if ($sql) {
+
+                    $deleteQuery = "DELETE FROM Sellers WHERE SellerID = $sellerID";
+
+                    $result = mysqli_query($conn, $deleteQuery);
+
+                    // Check if the deletion was successful
+                    if ($result) {
+                        $message = "Seller deleted successfully!";
+                        $popupClass = "success-popup";
+                    }else{
+                        $message = "Internal error occured while deleting user: " . mysqli_error($conn);
+                        $popupClass = "error-popup";
+                    }
                 } else {
                     $message = "Error deleting Seller: " . mysqli_error($conn);
                     $popupClass = "error-popup";
@@ -62,9 +73,6 @@ if ($operator != 'admin') {
 
         <!--Global Styles of the page-->
         <link rel="stylesheet" href="style.css">
-
-        <!--Responsiveness of the page-->
-        <link rel="stylesheet" href="responsiveness.css">
 
         <!--==Icons on the page==-->
         <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.min.css" rel="stylesheet">

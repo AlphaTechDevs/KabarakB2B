@@ -33,16 +33,28 @@ if ($operator != 'admin') {
                 // Retrieve the seller ID from the form
                 $productID = $_POST["item_id"];
 
-                // Add your SQL query to delete the product from the database
-                $deleteQuery = "DELETE FROM Products WHERE ProductID = $productID";
+                // Add the service to deleted products database
 
-                // Execute the query
-                $result = mysqli_query($conn, $deleteQuery);
+                $copyQuery = "INSERT INTO DeletedProducts SELECT * FROM Products WHERE ProductID = '$productID';";
 
-                // Check if the deletion was successful
-                if ($result) {
-                    $message = "Product deleted successfully!";
-                    $popupClass = "success-popup";
+                $sql = mysqli_query($conn, $copyQuery);
+
+                if ($sql) {
+
+                    // Add your SQL query to delete the product from the database
+                    $deleteQuery = "DELETE FROM Products WHERE ProductID = $productID";
+
+                    // Execute the query
+                    $result = mysqli_query($conn, $deleteQuery);
+
+                    // Check if the deletion was successful
+                    if ($result) {
+                        $message = "Product deleted successfully!";
+                        $popupClass = "success-popup";
+                    }else{
+                        $message = "Internal error occured while deleting product: " . mysqli_error($conn);
+                        $popupClass = "error-popup";
+                    }
                 } else {
                     $message = "Error deleting product: " . mysqli_error($conn);
                     $popupClass = "error-popup";
@@ -71,16 +83,27 @@ if ($operator != 'admin') {
             if (password_verify($password, $hashed_password)) {
                 // Retrieve the seller ID from the form
                 $serviceID = $_POST["item_id"];
-                // Add your SQL query to delete the product from the database
-                $deleteQuery = "DELETE FROM Services WHERE ServiceID = $serviceID";
 
-                // Execute the query
-                $result = mysqli_query($conn, $deleteQuery);
+                // Add the service to deleted services database
 
-                // Check if the deletion was successful
-                if ($result) {
-                    $message = "Service deleted successfully!";
-                    $popupClass = "success-popup";
+                $copyQuery = "INSERT INTO DeletedServices SELECT * FROM Services WHERE ServiceID = '$serviceID';";
+                $sql = mysqli_query($conn, $copyQuery);
+
+                if ($sql) {
+                    // Add your SQL query to delete the product from the database
+                    $deleteQuery = "DELETE FROM Services WHERE ServiceID = '$serviceID'";
+
+                    // Execute the query
+                    $result = mysqli_query($conn, $deleteQuery);
+
+                    // Check if the deletion was successful
+                    if ($result) {
+                        $message = "Service deleted successfully!";
+                        $popupClass = "success-popup";
+                    }else{
+                        $message = "Internal error occured while deleting service: " . mysqli_error($conn);
+                        $popupClass = "error-popup";
+                    }
                 } else {
                     $message = "Error deleting service: " . mysqli_error($conn);
                     $popupClass = "error-popup";
@@ -102,9 +125,6 @@ if ($operator != 'admin') {
 
         <!--Global Styles of the page-->
         <link rel="stylesheet" href="style.css">
-
-        <!--Responsiveness of the page-->
-        <link rel="stylesheet" href="responsiveness.css">
 
         <!--==Icons on the page==-->
         <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.min.css" rel="stylesheet">
