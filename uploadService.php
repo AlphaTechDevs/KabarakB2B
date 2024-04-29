@@ -59,6 +59,8 @@ if ($operator != 'admin') {
                     if (mysqli_query($conn, $SQL)) {
                         $message = "Service added successfully";
                         $popupClass = "success-popup";
+                        header('Location: ' . $_SERVER['PHP_SELF'] . '?update_success=true');
+                        exit();
                     } else {
                         $message = "Error inserting into sellerServices: " . mysqli_error($conn);
                         $popupClass = "error-popup";
@@ -590,6 +592,10 @@ if ($operator != 'admin') {
         window.onload = function() {
             var popupMessage = "<?php echo $message; ?>";
             if (popupMessage !== "") {
+                document.getElementById('popup').style.display = 'flex';
+            }
+            var urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('update_success')) {
                 document.getElementById('popup').style.display = 'flex';
             }
         };

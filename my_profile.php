@@ -77,6 +77,8 @@ if (($operator == 'admin') || ($operator == 'seller')) {
             $message = " Information Successfully Updated";
             $popupClass = "success-popup";
             $_SESSION['user'] = $telephone;
+            header('Location: ' . $_SERVER['PHP_SELF'] . '?update_success=true');
+            exit();
         } else {
 
             $message = "Error updating Information" . mysqli_error($conn);
@@ -863,6 +865,10 @@ if (($operator == 'admin') || ($operator == 'seller')) {
         window.onload = function() {
             var popupMessage = "<?php echo $message; ?>";
             if (popupMessage !== "") {
+                document.getElementById('popup').style.display = 'flex';
+            }
+            var urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('update_success')) {
                 document.getElementById('popup').style.display = 'flex';
             }
         };

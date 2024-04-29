@@ -40,22 +40,24 @@ if ($operator != 'admin') {
 
         $gender = ucfirst(strtolower($gender));
 
-        if(($gender == 'Male') || ($gender=='Female')|| ($gender == 'Other')){
+        if (($gender == 'Male') || ($gender == 'Female') || ($gender == 'Other')) {
 
-        #Update the sellers table and redirect to send OTP
-        $query = "UPDATE Sellers SET SellerFirstName = '$first_name', SellerLastName = '$last_name', Gender = '$gender',Telephone = '$telephone', Email = '$email',WhatsAppNumber = '$whatsapp_number',BusinessType = '$business_type',BusinessName = '$business_name' WHERE SellerID = '$sellerID'";
-        $sql = mysqli_query($conn, $query);
-        if ($sql) {
+            #Update the sellers table and redirect to send OTP
+            $query = "UPDATE Sellers SET SellerFirstName = '$first_name', SellerLastName = '$last_name', Gender = '$gender',Telephone = '$telephone', Email = '$email',WhatsAppNumber = '$whatsapp_number',BusinessType = '$business_type',BusinessName = '$business_name' WHERE SellerID = '$sellerID'";
+            $sql = mysqli_query($conn, $query);
+            if ($sql) {
 
-            $message = $first_name . " " . $last_name . "'S Information Successfully Updated";
-            $popupClass = "success-popup";
-        } else {
+                $message = $first_name . " " . $last_name . "'S Information Successfully Updated";
+                $popupClass = "success-popup";
+                header('Location: ' . $_SERVER['PHP_SELF'] . '?update_success=true');
+                exit();
+            } else {
 
-            $message = "Error updating " . $first_name . " " . $last_name . "'S Information" . mysqli_error($conn);
-            $popupClass = "error-popup";
+                $message = "Error updating " . $first_name . " " . $last_name . "'S Information" . mysqli_error($conn);
+                $popupClass = "error-popup";
+            }
         }
     }
-}
 ?>
 
     <!DOCTYPE html>
@@ -566,13 +568,13 @@ if ($operator != 'admin') {
 
                                         <td> <input type="text" name="gender" value="<?php echo $row['Gender']; ?>" minlength="4" maxlength="8" pattern="[A-Za-z]+" title="Please enter a name with alphabets only"> </td>
 
-                                        <td> <input type="tel" name="telephone" value="<?php echo $row['Telephone']; ?> " minlength="10" maxlength="13"  pattern="\+[0-9]{12}" title="Please a phone number should only contain numeric values"></td>
+                                        <td> <input type="tel" name="telephone" value="<?php echo $row['Telephone']; ?> " minlength="10" maxlength="13" pattern="\+[0-9]{12}" title="Please a phone number should only contain numeric values"></td>
 
                                         <td> <input type="tel" name="whatsapp" value="<?php echo $row['WhatsAppNumber']; ?>" minlength="10" maxlength="13" pattern="\+[0-9]{12}" title="Please a phone number should only contain numeric values"> </td>
 
                                         <td> <input type="email" name="email" value="<?php echo $row['Email']; ?>"> </td>
 
-                                        <td> <input type="text" name="business_type" value="<?php echo $row['BusinessType']; ?>"  pattern="[A-Za-z\s]+" title="Please enter a name with alphabets only"> </td>
+                                        <td> <input type="text" name="business_type" value="<?php echo $row['BusinessType']; ?>" pattern="[A-Za-z\s]+" title="Please enter a name with alphabets only"> </td>
 
                                         <td> <input type="text" name="business_name" value="<?php echo $row['BusinessName']; ?>"> </td>
                                         <td style="padding: .1rem .5rem;">
@@ -673,6 +675,10 @@ if ($operator != 'admin') {
         window.onload = function() {
             var popupMessage = "<?php echo $message; ?>";
             if (popupMessage !== "") {
+                document.getElementById('popup').style.display = 'flex';
+            }
+            var urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('update_success')) {
                 document.getElementById('popup').style.display = 'flex';
             }
         };
