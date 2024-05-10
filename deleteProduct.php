@@ -204,7 +204,7 @@ if ($operator != 'admin') {
         }
 
         .tables-container {
-            margin-top: 6rem;
+            margin-top: 1rem;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -497,7 +497,11 @@ if ($operator != 'admin') {
             </li>
             <li class="menu-item">
                 <a href="./deleteUser.php" class="link"><i class="#"></i>Delete User</a>
+
             </li>
+            <li class="menu-item">
+                    <a href="./TrashBin.php" class="link"><i class="#"></i>Bin</a>
+                </li>
             <li class="menu-item last-item">
                 <a href="./logout.php" class="link"><i class="#"></i>Logout</a>
             </li>

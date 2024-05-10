@@ -520,6 +520,9 @@ if ($operator != 'admin') {
                 <li class="menu-item">
                     <a href="./deleteUser.php" class="link"><i class="#"></i>Delete User</a>
                 </li>
+                <li class="menu-item">
+                    <a href="./TrashBin.php" class="link"><i class="#"></i>Bin</a>
+                </li>
                 <li class="menu-item last-item">
                     <a href="./logout.php" class="link"><i class="#"></i>Logout</a>
                 </li>

@@ -15,65 +15,64 @@ if ($operator != 'admin') {
 
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-        $password = $_POST["password"];
-        // Check if the password matches the admin's password
-        $query = "SELECT Passphrase FROM Admin WHERE Telephone = '$user';";
+        // Retrieve the item ID from the form
+        $itemID = $_POST["item_id"];
 
-        //Run the Query
-        $sql = mysqli_query($conn, $query);
+        // Determine the type of item (Product or Service or seller)
+        $itemType = $_POST["item_type"];
 
-        //Pick Data From Database
+        $Action = $_POST['item_action'];
 
-        if ($row = mysqli_fetch_array($sql)) {
-
-            $hashed_password = $row['Passphrase'];
-
-            if (password_verify($password, $hashed_password)) {
-                // Retrieve the seller ID from the form
-                $sellerID = $_POST["seller_id"];
-
-                // Add the user to deleted users database
-
-                $copyQuery = "INSERT INTO DeletedUsers SELECT * FROM Sellers WHERE SellerID = '$sellerID';";
-                $sql = mysqli_query($conn, $copyQuery);
-
-                if ($sql) {
-
-                    $deleteQuery = "DELETE FROM Sellers WHERE SellerID = $sellerID";
-
-                    $result = mysqli_query($conn, $deleteQuery);
-
-                    // Check if the deletion was successful
-                    if ($result) {
-                        $message = "user successfully deleted";
-                        $popupClass = "success-popup";
-                        // Redirect to the same page with a query parameter indicating success
-                        header('Location: ' . $_SERVER['PHP_SELF'] . '?delete_success=true');
-                        exit();
-                    } else {
-                        $message = "Internal error occurred while deleting user: " . mysqli_error($conn);
-                        $popupClass = "error-popup";
-                    }
-                } else {
-                    $message = "Error deleting Seller: " . mysqli_error($conn);
-                    $popupClass = "error-popup";
-                }
+        if ($Action == "delete") {
+            // Construct appropriate queries based on item type
+            if ($itemType == "product") {
+                $deleteQuery = "DELETE FROM DeletedProducts WHERE ProductID = '$itemID'";
+                $successMessage = "Product deleted successfully!";
+                $errorMessage = "Error deleting product: ";
+            } elseif ($itemType == "service") {
+                $deleteQuery = "DELETE FROM DeletedServices WHERE ServiceID = '$itemID'";
+                $successMessage = "Service deleted successfully!";
+                $errorMessage = "Error deleting service: ";
+            } elseif ($itemType == "user") {
+                $deleteQuery = "DELETE FROM DeletedSellers WHERE SellerID = '$itemID'";
+                $successMessage = "Seller deleted successfully!";
+                $errorMessage = "Error deleting seller: ";
             } else {
-                $message = "Incorrect password! User not deleted.";
+                // Invalid item type
+                $message = "Invalid item type!";
+                $popupClass = "error-popup";
+                exit(); // Stop execution
+            }
+
+            // Execute the query
+            $sql = mysqli_query($conn, $deleteQuery);
+            if ($sql) {
+                $message = $successMessage;
+                $popupClass = "success-popup";
+                // Redirect to the same page after successful deletion
+                header('Location: ' . $_SERVER['PHP_SELF'] . '?success=true');
+                exit();
+            } else {
+                $message = $errorMessage . mysqli_error($conn);
                 $popupClass = "error-popup";
             }
+        } else {
+            // Invalid item type
+            $message = "Invalid action!";
+            $popupClass = "error-popup";
+            exit(); // Stop execution
         }
     }
 }
 ?>
-
+<!-- HTML -->
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KabarakB2B | Admin Dashboard</title>
+    <title>KabarakB2B | Trash Bin</title>
 
     <!--Global Styles of the page-->
     <link rel="stylesheet" href="style.css">
@@ -120,6 +119,20 @@ if ($operator != 'admin') {
             transition: margin-left 0.3s;
         }
 
+        .sidebar-list {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-list .menu-item {
+            padding-block: .1rem;
+            padding-left: .3rem;
+            gap: 1rem;
+            margin: .3rem auto;
+            border-top: 1px solid var(--dark-color);
+            width: 100%;
+        }
+
         .buttons {
             top: 0;
             font-size: 1em;
@@ -137,20 +150,6 @@ if ($operator != 'admin') {
 
         .sidebar-close-btn {
             display: none;
-        }
-
-        .sidebar-list {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .sidebar-list .menu-item {
-            padding-block: .1rem;
-            padding-left: .3rem;
-            gap: 1rem;
-            margin: .3rem auto;
-            border-top: 1px solid var(--dark-color);
-            width: 100%;
         }
 
         .sidebar-list .first-item {
@@ -199,14 +198,6 @@ if ($operator != 'admin') {
             width: 100%;
         }
 
-        #sellers {
-            margin-top: 0;
-        }
-
-        #sellers thead {
-            background-color: var(--box1-color);
-        }
-
         th {
             font-size: var(--font-size-m);
             padding: .5rem 1rem;
@@ -216,6 +207,16 @@ if ($operator != 'admin') {
             font-size: var(--font-size-small);
             padding: .2rem 1.5rem;
         }
+
+        #products thead {
+            background-color: var(--box2-color);
+        }
+
+        #services thead {
+            background-color: var(--box3-color);
+        }
+
+
 
         .success-popup {
             background-color: #4DA3FF;
@@ -248,21 +249,19 @@ if ($operator != 'admin') {
             width: 20rem;
             height: auto;
             background-color: #f1f1f1;
-            /* Semi-transparent background */
             z-index: 1000;
         }
 
         .popup-message {
             background-color: inherit;
-            padding: 1.8rem;
-            border-radius: .8rem;
-            color: var(--dark-color);
+            padding: 20px;
+            border-radius: 10px;
             text-align: center;
         }
 
         .popup button {
-            margin-top: 1rem;
-            padding: 1rem 2rem;
+            margin-top: 10px;
+            padding: 10px;
             cursor: pointer;
         }
 
@@ -357,6 +356,13 @@ if ($operator != 'admin') {
                 word-wrap: break-word;
                 white-space: wrap;
             }
+
+            .popup {
+                top: 0;
+                left: 0;
+                margin: 25% 10%;
+                width: 80%;
+            }
         }
 
         @media screen and (max-width: 768px) {
@@ -373,13 +379,6 @@ if ($operator != 'admin') {
             td {
                 font-size: var(--font-size-xsmall);
                 padding: .1rem .75rem;
-            }
-
-            .popup {
-                top: 0;
-                left: 0;
-                margin: 25% 10%;
-                width: 80%;
             }
         }
 
@@ -481,8 +480,8 @@ if ($operator != 'admin') {
                 <a href="./deleteUser.php" class="link"><i class="#"></i>Delete User</a>
             </li>
             <li class="menu-item">
-                    <a href="./TrashBin.php" class="link"><i class="#"></i>Bin</a>
-                </li>
+                <a href="./TrashBin.php" class="link"><i class="#"></i>Bin</a>
+            </li>
             <li class="menu-item last-item">
                 <a href="./logout.php" class="link"><i class="#"></i>Logout</a>
             </li>
@@ -490,22 +489,132 @@ if ($operator != 'admin') {
     </div>
 
     <div id="content" class="content">
-
-        <section class="section dashboard">
-            <!-- Display the popup based on the success or error message -->
-            <div class="popup <?php echo $popupClass; ?>" id="popup">
-                <div class="popup-message">
-                    <p><?php echo $message; ?></p>
-                    <button class="pop-btn" onclick="closePopup()">Close</button>
-                </div>
+        <!-- Display the popup based on the success or error message -->
+        <div class="popup <?php echo $popupClass; ?>" id="popup">
+            <div class="popup-message">
+                <p><?php echo $message; ?></p>
+                <button class="pop-btn" onclick="closePopup()">Close</button>
             </div>
+        </div>
+        <section class="section dashboard">
+
             <div class="tables-container container">
+                <!--Products in our system--->
+                <table border="1" cellpadding="10" cellspacing="0" align="center" id="products">
+                    <thead>
+                        <tr>
+                            <th colspan="7">Products Deleted</th>
+                        </tr>
+                        <tr>
+                            <th>
+                                Product ID
+                            </th>
+                            <th>
+                                Product Name
+                            </th>
+                            <th>
+                                Price
+                            </th>
+                            <th>
+                                Brand
+                            </th>
+                            <th>
+                                Category
+                            </th>
+                            <th>
+                                Delete
+                            </th>
+                            <th>
+                                Restore
+                            </th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        $query = "SELECT * FROM DeletedProducts;";
+
+                        $sql = mysqli_query($conn, $query);
+
+                        while ($row = mysqli_fetch_array($sql)) {
+
+                        ?>
+                            <tr>
+                                <td> <?php echo $row['ProductID']; ?> </td>
+                                <td> <?php echo $row['ProductName']; ?> </td>
+                                <td> <?php echo $row['Price']; ?> </td>
+                                <td> <?php echo $row['Brand']; ?> </td>
+                                <td> <?php echo $row['Category']; ?> </td>
+                                <td>
+                                    <button type="button" style="background-color: red; color: var(--dark-color); padding: .5rem 1rem;" onclick="confirmDelete(<?php echo $row['ProductID']; ?>,'product')">Del</button>
+                                </td>
+                                <td>
+                                    <button type="button" style="background-color: green; color: var(--light-color); padding: .5rem 1rem;" onclick="confirmRestore(<?php echo $row['ProductID']; ?>,'product')">Restore</button>
+                                </td>
+                            </tr>
+
+                        <?php
+                        }
+                        ?>
+                    </tbody>
+                </table>
+
+
+                <!--Services in our system--->
+                <table border="1" cellpadding="10" cellspacing="0" align="center" id="services">
+                    <thead>
+                        <tr>
+                            <th colspan="5">Services Deleted</th>
+                        </tr>
+                        <tr>
+                            <th>
+                                ServiceID
+                            </th>
+                            <th>
+                                Service Type
+                            </th>
+                            <th>
+                                Price
+                            </th>
+                            <th>
+                                Delete
+                            </th>
+                            <th>
+                                Restore
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        $query = "SELECT * FROM DeletedServices;";
+
+                        $sql = mysqli_query($conn, $query);
+
+                        while ($row = mysqli_fetch_array($sql)) {
+                        ?>
+                            <tr>
+                                <td> <?php echo $row['ServiceID']; ?> </td>
+                                <td> <?php echo $row['ServiceType']; ?> </td>
+                                <td> <?php echo $row['Price']; ?> </td>
+                                <td>
+                                    <button type="button" style="background-color: red; color: var(--dark-color); padding: .5rem 1rem;" onclick="confirmDelete(<?php echo $row['ServiceID']; ?>,'service')">Del</button>
+                                </td>
+                                <td>
+                                    <button type="button" style="background-color: green; color: var(--light-color); padding: .5rem 1rem;" onclick="confirmRestore(<?php echo $row['ServiceID']; ?>,'service')">Restore</button>
+                                </td>
+                            </tr>
+                        <?php
+                        }
+                        ?>
+                    </tbody>
+                </table>
+
 
                 <!--Sellers in our system--->
                 <table border="1" cellpadding="10" cellspacing="0" align="center" id="sellers">
                     <thead>
                         <tr>
-                            <th colspan="8">KabarakB2B Sellers</th>
+                            <th colspan="9">Deleted Sellers</th>
                         </tr>
                         <tr>
                             <th>
@@ -530,13 +639,17 @@ if ($operator != 'admin') {
                                 Business Name
                             </th>
                             <th>
-                                Delete User
+                                Delete
+                            </th>
+
+                            <th>
+                                Restore
                             </th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php
-                        $query = "SELECT * FROM Sellers;";
+                        $query = "SELECT * FROM DeletedUsers;";
 
                         $sql = mysqli_query($conn, $query);
 
@@ -552,7 +665,11 @@ if ($operator != 'admin') {
                                 <td> <?php echo $row['BusinessType']; ?> </td>
                                 <td> <?php echo $row['BusinessName']; ?> </td>
                                 <td>
-                                    <button type="button" style="background-color: red; color: var(--dark-color); padding: .5rem 1rem;" onclick="confirmDelete(<?php echo $row['SellerID']; ?>)">Del</button>
+                                    <button type="button" style="background-color: red; color: var(--dark-color); padding: .5rem 1rem;" onclick="confirmDelete(<?php echo $row['SellerID']; ?>,'user')">Del</button>
+                                </td>
+
+                                <td>
+                                    <button type="button" style="background-color: green; color: var(--light-color); padding: .5rem 1rem;" onclick="confirmRestore(<?php echo $row['SellerID']; ?>,'user')">Restore</button>
                                 </td>
                             </tr>
 
@@ -561,6 +678,7 @@ if ($operator != 'admin') {
                         ?>
                     </tbody>
                 </table>
+            </div>
         </section>
         <!--Footer-->
         <footer class="footer section" id="about-us">
@@ -638,18 +756,40 @@ if ($operator != 'admin') {
         </footer>
     </div>
 
-    <form id="deleteForm" method="post" action="deleteUser.php">
-        <input type="hidden" name="seller_id" id="seller_id">
-        <input type="hidden" name="password" id="password">
+
+    <form id="deleteForm" method="post" action="TrashBin.php">
+        <input type="hidden" name="item_id" id="item_id">
+        <input type="hidden" name="item_type" id="item_type">
+        <input type="hidden" name="item_action" id="item_action">
     </form>
+
+    <form id="restoreForm" method="post" action="./restore.php" enctype="multipart/form-data">
+        <input type="hidden" name="item_id" id="item_id">
+        <input type="hidden" name="item_type" id="item_type">
+        <input type="hidden" name="item_action" id="item_action">
+    </form>
+
     <script type="text/javascript">
-        function confirmDelete(sellerId) {
-            var password = prompt("Please enter your password to confirm deletion:");
-            if (password !== null) {
-                // If password is entered, submit the form with the password and seller ID
-                document.getElementById('password').value = password;
-                document.getElementById('seller_id').value = sellerId;
+        function confirmDelete(itemId, itemType) {
+            var confirmation = confirm("Are you sure you want to delete this item?");
+            if (confirmation) {
+                // If password is entered, submit the form with the password, item ID, and item type
+                document.getElementById('item_id').value = itemId;
+                document.getElementById('item_type').value = itemType; // Set the item type
+                document.getElementById('item_action').value = "delete";
                 document.getElementById('deleteForm').submit();
+            }
+        }
+        function confirmRestore(itemId, itemType) {
+            // Prompt the user to confirm restoration
+            var confirmation = confirm("Are you sure you want to restore this item?");
+
+            // If user confirms restoration
+            if (confirmation) {
+                document.getElementById('item_id').value = itemId;
+                document.getElementById('item_type').value = itemType;
+                document.getElementById('item_action').value = "restore";
+                document.getElementById('restoreForm').submit();
             }
         }
     </script>
@@ -669,7 +809,6 @@ if ($operator != 'admin') {
         if (urlParams.has('delete_success')) {
             document.getElementById('popup').style.display = 'flex';
         }
-
     };
 </script>
 <script src="./index.js"></script>
